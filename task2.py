@@ -79,11 +79,12 @@ class TestCase():
 
 
     def apply_pca(self):
-        if self.pca is not None and int(self.pca) != 0:
+        if self.pca is not None:
             tstart = time.time()
 
             max_pca = min(len(self.X_train), len(self.X_train[0]))
             n = int(self.pca * max_pca)
+            print("PCA num: " + str(n))
 
             pca = PCA(n_components=n) #New dimentionality of feature vectors
             self.X_train = pca.fit_transform(self.X_train)
@@ -152,7 +153,7 @@ class TestCase():
         with open('results1.csv', 'a+') as f:
             f.write(",".join(o_str) + "\n")
 
-        print("F - f1: {0:.3f}, accuracy: {1:.3f}, runtime: {2}".format(self.test_results["f1"], self.test_results["accuracy"], self.runtime))
+        print("F - f1: {0:.3f}, accuracy: {1:.3f}, runtime: {2:.3f}".format(self.test_results["f1"], self.test_results["accuracy"], self.runtime))
 
 
 
@@ -181,8 +182,8 @@ def main():
     X_full, y_full = load_data()
     X_small = X_full[:5000]
     y_small = y_full[:5000]
-    X_test = X_full[-300:]
-    y_test = y_full[-300:]
+    X_test = X_full[-500:]
+    y_test = y_full[-500:]
 
     # X_small = [[n/255 for n in x] for x in X_small]
     # X_test = [[n/255 for n in x] for x in X_test]
