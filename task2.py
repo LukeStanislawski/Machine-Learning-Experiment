@@ -1,4 +1,4 @@
-import sys, os, time, datetime
+import sys, os, time, datetime, logging
 import matplotlib.pyplot as plt
 import matplotlib.image as mpimg
 import numpy as np
@@ -9,9 +9,28 @@ from sklearn.model_selection import ShuffleSplit
 from sklearn.metrics import f1_score, accuracy_score
 from scipy import stats
 
+log = logging.getLogger("file_out")
+hdlr = logging.FileHandler('task2.log')
+formatter = logging.Formatter('"%(asctime)s [%(levelname)-5.5s]  %(message)s"')
+hdlr.setFormatter(formatter)
+log.addHandler(hdlr) 
+log.setLevel(logging.INFO)
+logging.getLogger().addHandler(logging.StreamHandler(sys.stdout))
 
-class RunTest():
-    def __init__(self, X_train, y_train, X_test, y_test, folds=10, kernel='linear', C=1, ID="0", pca=None):
+class TestCase():
+    def __init__(self, 
+    	X_train, 
+    	y_train, 
+    	X_test, 
+    	y_test, 
+    	folds=10, 
+    	kernel='linear', 
+    	C=1.0, 
+    	degree=3, 
+    	gamma='scale', 
+    	ID="0", 
+    	pca=None):
+
         self.X_train = X_train
         self.y_train = y_train
         self.X_test = X_test
@@ -19,6 +38,8 @@ class RunTest():
         self.folds = folds
         self.kernel = kernel
         self.C = C
+        self.degree = degree
+        self.gamma = gamma
         self.ID = ID
         self.pca = pca
         self.pca_time = 0
@@ -27,14 +48,24 @@ class RunTest():
         self.runtime = None
         self.train_results = []
         self.test_results = None
-        self.svc = SVC(kernel=self.kernel, C=self.C, gamma='auto')
 
-        print("\nKernel: {}, C: {}, Folds: {}, PCA: {}".format(self.kernel, self.C, self.folds, self.pca))
+        print("\n")
+        log.info("Kernel: {}, C: {}, Folds: {}, PCA: {}, Degree: {}, Gamma: {}".format(self.kernel, self.C, self.folds, self.pca, self.degree, self.gamma))
 
-        self.main()
+        try:
+        	self.svc = SVC(kernel=self.kernel, C=self.C, gamma=self.gamma, degree=self.degree)
+        except Exception as e:
+        	log.info("ERROR: Could not create SVC")
+        	log.info(str(e))
+
+        try:
+        	self.run()
+        except Exception as e:
+        	log.info("ERROR: while running test")
+        	log.info(str(e))
 
 
-    def main(self):
+    def run(self):
         tstart = time.time()
 
         self.apply_pca()
@@ -83,7 +114,7 @@ class RunTest():
             it_res.update(self.test(X_val, y_val))
             
             self.train_results.append(it_res)
-            print("{0} - f1: {1:.3f}, accuracy: {2:.3f}, runtime: {3:.3f}".format(i, it_res['f1'], it_res['accuracy'], it_res["runtime"]))
+            log.info("{0} - f1: {1:.3f}, accuracy: {2:.3f}, train runtime: {3:.3f}, test runtime: {4:.3f}".format(i, it_res['f1'], it_res['accuracy'], it_res["t_train"], it_res["runtime"]))
 
 
     def test(self, X, y):
@@ -104,6 +135,8 @@ class RunTest():
             self.datetime,
             self.kernel,
             self.C,
+            self.degree,
+            self.gamma,
             self.folds,
             self.pca,
             "{0:.3f}".format(self.test_results["f1"]),
@@ -119,7 +152,7 @@ class RunTest():
         with open('results1.csv', 'a+') as f:
             f.write(",".join(o_str) + "\n")
 
-        print("F - f1: {0:.3f}, accuracy: {1:.3f}, runtime: {2:.3f}".format(self.test_results["f1"], self.test_results["accuracy"], self.runtime))
+        print("F - f1: {0:.3f}, accuracy: {1:.3f}, runtime: {2}".format(self.test_results["f1"], self.test_results["accuracy"], self.runtime))
 
 
 
@@ -128,13 +161,6 @@ def unpickle(file):
     with open(file, 'rb') as fo:
         dict = pickle.load(fo, encoding='bytes')
     return dict
-
-
-# def display_img(img):
-#     img2 = [[img[x], img[1024+x], img[2048+x]] for x in range(int(len(img)/3))]  
-#     img3 = [img2[x*32:(x+1)*32] for x in range(32)]
-#     plt.imshow(img3)
-#     plt.show()
 
 
 def load_data():
@@ -153,24 +179,39 @@ def load_data():
 def main():
     print("Loading data")
     X_full, y_full = load_data()
-    X_small = X_full[:500]
-    y_small = y_full[:500]
-    X_test = X_full[-50:]
-    y_test = y_full[-50:]
+    X_small = X_full[:5000]
+    y_small = y_full[:5000]
+    X_test = X_full[-300:]
+    y_test = y_full[-300:]
 
     # X_small = [[n/255 for n in x] for x in X_small]
     # X_test = [[n/255 for n in x] for x in X_test]
 
-    # print("Testing plain data..")
-    # RunTest(X_small, y_small, X_test, y_test)
 
-    # print("Testing PCA data..")
-    # RunTest(X_small, y_small, X_test, y_test, pca=0.8)
+    # Task 2.1
+    id = 0
+    for pca in [None, 0.7, 0.5, 0.3, 0.1, 0.9, 0.8, 0.6, 0.4, 0.2]:
+    	TestCase(X_small, y_small, X_test, y_test, ID=id, kernel='linear', pca=pca, C=1)
+    	id += 1
 
-    for pca in [0, 0.8, 0.5]:
-        for kernel in ['linear', 'poly']:
-            RunTest(X_small, y_small, X_test, y_test, kernel=kernel, pca=pca)
+    # Task 2.2
+    for C in [100, 10, 1, 0.1, 0.01]:
+	    for gamma in ['scale', 'auto']:
+	    	for degree in [2, 3, 4]:
+	    		TestCase(X_small, y_small, X_test, y_test, ID=id, kernel='poly', pca=None, C=C, degree=degree, gamma=gamma)
+	    		id += 1
+
+    		TestCase(X_small, y_small, X_test, y_test, ID=id, kernel='rbf', pca=None, C=C, gamma=gamma)
+    		id += 1
 
 
 if __name__ == "__main__":
     main()
+
+
+
+# def display_img(img):
+#     img2 = [[img[x], img[1024+x], img[2048+x]] for x in range(int(len(img)/3))]  
+#     img3 = [img2[x*32:(x+1)*32] for x in range(32)]
+#     plt.imshow(img3)
+#     plt.show()
