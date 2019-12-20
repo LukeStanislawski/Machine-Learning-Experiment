@@ -176,10 +176,10 @@ def load_data():
 def main():
     print("Loading data")
     X_full, y_full = load_data()
-    X_small = X_full[:100]
-    y_small = y_full[:100]
-    X_test = X_full[-100:]
-    y_test = y_full[-100:]
+    X_small = X_full[:15000]
+    y_small = y_full[:15000]
+    X_test = X_full[-3000:]
+    y_test = y_full[-3000:]
 
     # X_small = [[n/255 for n in x] for x in X_small]
     # X_test = [[n/255 for n in x] for x in X_test]
