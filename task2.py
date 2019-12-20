@@ -49,7 +49,6 @@ class TestCase():
         self.train_results = []
         self.test_results = None
 
-        print("\n")
         log.info("Kernel: {}, C: {}, Folds: {}, PCA: {}, Degree: {}, Gamma: {}".format(self.kernel, self.C, self.folds, self.pca, self.degree, self.gamma))
 
         try:
@@ -84,7 +83,6 @@ class TestCase():
 
             max_pca = min(len(self.X_train), len(self.X_train[0]))
             n = int(self.pca * max_pca)
-            print("PCA num: " + str(n))
 
             pca = PCA(n_components=n) #New dimentionality of feature vectors
             self.X_train = pca.fit_transform(self.X_train)
@@ -115,7 +113,7 @@ class TestCase():
             it_res.update(self.test(X_val, y_val))
             
             self.train_results.append(it_res)
-            log.info("{0} - f1: {1:.3f}, accuracy: {2:.3f}, train runtime: {3:.3f}, test runtime: {4:.3f}".format(i, it_res['f1'], it_res['accuracy'], it_res["t_train"], it_res["runtime"]))
+            log.info("{0} - f1: {1:.3f}, accuracy: {2:.3f}, train_time: {3:.3f}, test_time: {4:.3f}".format(i, it_res['f1'], it_res['accuracy'], it_res["t_train"], it_res["runtime"]))
 
 
     def test(self, X, y):
@@ -178,12 +176,12 @@ def load_data():
 
 
 def main():
-    print("Loading data")
+    print("Loading data\n")
     X_full, y_full = load_data()
-    X_small = X_full[:5000]
-    y_small = y_full[:5000]
-    X_test = X_full[-500:]
-    y_test = y_full[-500:]
+    X_small = X_full[:200]
+    y_small = y_full[:200]
+    X_test = X_full[-40:]
+    y_test = y_full[-40:]
 
     # X_small = [[n/255 for n in x] for x in X_small]
     # X_test = [[n/255 for n in x] for x in X_test]
@@ -191,9 +189,9 @@ def main():
 
     # Task 2.1
     id = 0
-    for pca in [None, 0.7, 0.5, 0.3, 0.1, 0.9, 0.8, 0.6, 0.4, 0.2]:
-    	TestCase(X_small, y_small, X_test, y_test, ID=id, kernel='linear', pca=pca, C=1)
-    	id += 1
+    # for pca in [None, 0.7, 0.5, 0.3, 0.1, 0.9, 0.8, 0.6, 0.4, 0.2]:
+    # 	TestCase(X_small, y_small, X_test, y_test, ID=id, kernel='linear', pca=pca, C=1)
+    # 	id += 1
 
     # Task 2.2
     for C in [100, 10, 1, 0.1, 0.01]:
