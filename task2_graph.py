@@ -21,7 +21,7 @@ def main():
 	plt.figure(figsize=(15,8))
 	plt.subplots_adjust(bottom=0.08, top=0.9, left=0.08, right=0.95, wspace=0.2, hspace=0.4)
 	rows = 3
-	cols = 2
+	cols = 3
 
 	f1_v_pca(results)
 	acc_v_pca(results)
@@ -29,6 +29,8 @@ def main():
 	poly_c_v_f1(results)
 	rbf_c_v_acc(results)
 	rbf_c_v_f1(results)
+	ploy_degree_v_acc(results)
+	ploy_degree_v_f1(results)
 
 	plt.show()
 
@@ -66,7 +68,8 @@ def poly_c_v_acc(results):
 	graph_codes = ["gs-", "rs--", "bs--"]
 
 	k_poly = [x for x in results if x["param"]["kernel"] == 'poly']
-	degrees = list(set([x["param"]["degree"] for x in k_poly]))
+	# degrees = list(set([x["param"]["degree"] for x in k_poly]))
+	degrees = [2,4,6]
 	for i, degree in enumerate(degrees):
 		poly_vs_C = [x for x in k_poly if x["param"]["gamma"] == "auto" and x["param"]["degree"] == degree]
 		poly_vs_C = sorted(poly_vs_C, key = lambda i: i["param"]['C'])
@@ -75,7 +78,7 @@ def poly_c_v_acc(results):
 		plt.plot(poly_vs_C_C, poly_vs_C_acc, graph_codes[i], label="Degree={}".format(degree))
 
 
-	plt.title('Poly Accuracy of C value')
+	plt.title('Poly Accuracy of C Value')
 	plt.ylabel('Accuracy')
 	plt.xlabel('log(C)')
 	plt.legend(loc="upper right")
@@ -88,7 +91,8 @@ def poly_c_v_f1(results):
 	graph_codes = ["gs-", "rs--", "bs--"]
 
 	k_poly = [x for x in results if x["param"]["kernel"] == 'poly']
-	degrees = list(set([x["param"]["degree"] for x in k_poly]))
+	# degrees = list(set([x["param"]["degree"] for x in k_poly]))
+	degrees = [2,4,6]
 	for i, degree in enumerate(degrees):
 		poly_vs_C = [x for x in k_poly if x["param"]["gamma"] == "auto" and x["param"]["degree"] == degree]
 		poly_vs_C = sorted(poly_vs_C, key = lambda i: i["param"]['C'])
@@ -96,7 +100,7 @@ def poly_c_v_f1(results):
 		poly_vs_C_f1 = [x["run"]["cv_f1"] for x in poly_vs_C]
 		plt.plot(poly_vs_C_C, poly_vs_C_f1, graph_codes[i], label="Degree={}".format(degree))
 
-	plt.title('Poly F1 Against C value')
+	plt.title('Poly F1 Against C Value')
 	plt.ylabel('F1')
 	plt.xlabel('log(C)')
 	plt.legend(loc="upper right")
@@ -112,14 +116,14 @@ def rbf_c_v_acc(results):
 	Cs = [np.log10(x["param"]["C"]) for x in k_rbf]
 	accs = [x["run"]["cv_accuracy"] for x in k_rbf]
 	plt.plot(Cs, accs, "gs-")
-	plt.title('RBF Accuracy Against C value')
+	plt.title('RBF Accuracy Against C Value')
 	plt.ylabel('Accuracy')
 	plt.xlabel('log(C)')
 	# plt.ylim(0.05, 0.3)
 
 
 def rbf_c_v_f1(results):
-	# rbf: C vs accuracy
+	# rbf: C vs f1
 	plt.subplot(rows,cols,get_gn())
 	k_rbf = [x for x in results if x["param"]["kernel"] == 'rbf' and x["param"]["gamma"] == "auto"]
 	k_rbf = sorted(k_rbf, key = lambda i: i["param"]['C'])
@@ -127,10 +131,54 @@ def rbf_c_v_f1(results):
 	Cs = [np.log10(x["param"]["C"]) for x in k_rbf]
 	f1s = [x["run"]["cv_f1"] for x in k_rbf]
 	plt.plot(Cs, f1s, "gs-")
-	plt.title('RBF Accuracy Against C value')
-	plt.ylabel('Accuracy')
+	plt.title('RBF F1 Against C Value')
+	plt.ylabel('F1')
 	plt.xlabel('log(C)')
 	# plt.ylim(0.05, 0.3)
+
+
+def ploy_degree_v_acc(results):
+	plt.subplot(rows,cols,get_gn())
+	graph_codes = ["gs-", "rs--", "bs--"]
+
+	k_poly = [x for x in results if x["param"]["kernel"] == 'poly']
+	# Cs = list(set([x["param"]["C"] for x in k_poly]))
+	Cs = [3,5,7]
+	for i, C in enumerate(Cs):
+		poly_vs_deg = [x for x in k_poly if x["param"]["gamma"] == "auto" and x["param"]["C"] == C]
+		poly_vs_deg = sorted(poly_vs_deg, key = lambda i: i["param"]['degree'])
+		poly_vs_deg_deg = [x["param"]["degree"] for x in poly_vs_deg]
+		poly_vs_deg_acc = [x["run"]["cv_accuracy"] for x in poly_vs_deg]
+		plt.plot(poly_vs_deg_deg, poly_vs_deg_acc, graph_codes[i], label="C={}".format(C))
+
+	plt.title('Poly Accuracy Against Degree Value')
+	plt.ylabel('Accuracy')
+	plt.xlabel('Degree')
+	plt.legend(loc="upper right")
+	# plt.ylim(0.05, 0.3)
+
+
+def ploy_degree_v_f1(results):
+	plt.subplot(rows,cols,get_gn())
+	graph_codes = ["gs-", "rs--", "bs--", "ys--", "os--", "ps--"]
+
+	k_poly = [x for x in results if x["param"]["kernel"] == 'poly']
+	# Cs = list(set([x["param"]["C"] for x in k_poly]))
+	Cs = [3,5,7]
+	for i, C in enumerate(Cs):
+		poly_vs_deg = [x for x in k_poly if x["param"]["gamma"] == 'auto' and x["param"]["C"] == C]
+		poly_vs_deg = sorted(poly_vs_deg, key = lambda i: i["param"]['degree'])
+		poly_vs_deg_deg = [x["param"]["degree"] for x in poly_vs_deg]
+		poly_vs_deg_f1 = [x["run"]["cv_f1"] for x in poly_vs_deg]
+		plt.plot(poly_vs_deg_deg, poly_vs_deg_f1, graph_codes[i], label="C={}".format(C))
+
+	plt.title('Poly Accuracy Against Degree Value')
+	plt.ylabel('Accuracy')
+	plt.xlabel('Degree')
+	plt.legend(loc="upper right")
+	# plt.ylim(0.05, 0.3)
+
+
 
 def get_gn():
 	global gn

@@ -1,6 +1,4 @@
 import sys, os, time, datetime, logging, json, traceback
-import matplotlib.pyplot as plt
-import matplotlib.image as mpimg
 import numpy as np
 from sklearn.svm import SVC
 from sklearn.decomposition import PCA
@@ -92,7 +90,7 @@ class TestCase():
 
 
     def apply_pca(self):
-        if float(self.pca) != 0.0:
+        if float(self.pca) != 1.0:
             tstart = time.time()
 
             max_pca = min(len(self.X_train), len(self.X_train[0]))
@@ -176,12 +174,12 @@ def load_data():
 
 
 def main():
-    print("Loading data\n")
+    print("Loading data")
     X_full, y_full = load_data()
     X_small = X_full[:100]
     y_small = y_full[:100]
-    X_test = X_full[-20:]
-    y_test = y_full[-20:]
+    X_test = X_full[-100:]
+    y_test = y_full[-100:]
 
     # X_small = [[n/255 for n in x] for x in X_small]
     # X_test = [[n/255 for n in x] for x in X_test]
@@ -189,19 +187,23 @@ def main():
 
     # Task 2.1
     id = 0
-    for pca in [0.0, 0.7, 0.5, 0.3, 0.9, 0.8, 0.6, 0.4, 0.2]:
+    for pca in [1.0, 0.7, 0.5, 0.3, 0.9, 0.8, 0.6, 0.4, 0.2]:
     	TestCase(X_small, y_small, X_test, y_test, ID=id, kernel='linear', pca=pca, C=1)
     	id += 1
 
     # Task 2.2
-    for C in [100, 10, 1, 0.1, 0.01]:
-	    for gamma in ['scale', 'auto']:
-	    	for degree in [2, 3, 4]:
-	    		TestCase(X_small, y_small, X_test, y_test, ID=id, kernel='poly', pca=0.0, C=C, degree=degree, gamma=gamma)
-	    		id += 1
+    for C in [1000, 500, 100, 50, 10, 5, 1, 0.5, 0.1, 0.05, 0.01, 0.005, 0.001]:
+        for degree in [2, 4, 6]:
+            TestCase(X_small, y_small, X_test, y_test, ID=id, kernel='poly', pca=1.0, C=C, degree=degree)
+            id += 1
+        TestCase(X_small, y_small, X_test, y_test, ID=id, kernel='rbf', pca=1.0, C=C, gamma='auto')
+        id += 1
 
-    		TestCase(X_small, y_small, X_test, y_test, ID=id, kernel='rbf', pca=0.0, C=C, gamma=gamma)
-    		id += 1
+
+    for degree in range(9):
+        for C in [3, 5, 7]:
+            TestCase(X_small, y_small, X_test, y_test, ID=id, kernel='poly', pca=1.0, C=C, gamma='auto', degree=degree)
+            id += 1
 
 
 if __name__ == "__main__":
