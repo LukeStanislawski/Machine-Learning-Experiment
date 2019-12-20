@@ -1,4 +1,4 @@
-import sys, os, time, datetime, logging
+import sys, os, time, datetime, logging, json, traceback
 import matplotlib.pyplot as plt
 import matplotlib.image as mpimg
 import numpy as np
@@ -29,7 +29,7 @@ class TestCase():
     	degree=3, 
     	gamma='scale', 
     	ID="0", 
-    	pca=None):
+    	pca=0.0):
 
         self.X_train = X_train
         self.y_train = y_train
@@ -42,26 +42,40 @@ class TestCase():
         self.gamma = gamma
         self.ID = ID
         self.pca = pca
-        self.pca_time = 0
-        self.datetime = datetime.datetime.now().strftime("%x %X")
-        self.train_time = None
-        self.runtime = None
-        self.train_results = []
-        self.test_results = None
 
+        self.res = {}
+        self.res["test"] = {}
+        self.res["train"] = []
+        self.res["param"] = {}
+        self.res["run"] = {}
+        self.res["run"]["datetime"] = datetime.datetime.now().strftime("%x %X")
+        self.res["param"]["folds"] = self.folds
+        self.res["param"]["C"] = self.C
+        self.res["param"]["kernel"] = self.kernel
+        self.res["param"]["degree"] = self.degree
+        self.res["param"]["gamma"] = self.gamma
+        self.res["param"]["ID"] = self.ID
+        self.res["param"]["pca"] = self.pca
+        self.res["param"]["n_train"] = len(self.X_train)
+        self.res["param"]["n_test"] = len(self.X_test)
+
+
+        print("\n")
         log.info("Kernel: {}, C: {}, Folds: {}, PCA: {}, Degree: {}, Gamma: {}".format(self.kernel, self.C, self.folds, self.pca, self.degree, self.gamma))
 
         try:
         	self.svc = SVC(kernel=self.kernel, C=self.C, gamma=self.gamma, degree=self.degree)
         except Exception as e:
         	log.info("ERROR: Could not create SVC")
-        	log.info(str(e))
+            # log.info(e)
 
         try:
         	self.run()
         except Exception as e:
-        	log.info("ERROR: while running test")
-        	log.info(str(e))
+            log.info("ERROR: while running test")
+            log.info(str(e))
+            log.info(sys.exc_info())
+            log.info(traceback.format_exc())
 
 
     def run(self):
@@ -70,15 +84,15 @@ class TestCase():
         self.apply_pca()
         tr_start = time.time()
         self.train()
-        self.train_time = time.time() - tr_start
-        self.test_results = self.test(self.X_test, self.y_test)
+        self.res["run"]["traintime"] = time.time() - tr_start
+        self.res["test"] = self.test(self.X_test, self.y_test)
         
-        self.runtime = time.time() - tstart
+        self.res["run"]["runtime"] = time.time() - tstart
         self.log_results()
 
 
     def apply_pca(self):
-        if self.pca is not None:
+        if float(self.pca) != 0.0:
             tstart = time.time()
 
             max_pca = min(len(self.X_train), len(self.X_train[0]))
@@ -88,10 +102,10 @@ class TestCase():
             self.X_train = pca.fit_transform(self.X_train)
             self.X_test = pca.transform(self.X_test)
 
-            self.pca_time = time.time() - tstart
+            self.res["run"]["pca_time"] = time.time() - tstart
 
 
-    def train(self):      
+    def train(self): 
         for i in range(self.folds):
             X_folds = np.array_split(self.X_train, self.folds)
             y_folds = np.array_split(self.y_train, self.folds)
@@ -112,8 +126,12 @@ class TestCase():
             it_res["t_train"] = tend - tstart
             it_res.update(self.test(X_val, y_val))
             
-            self.train_results.append(it_res)
+            self.res["train"].append(it_res)
             log.info("{0} - f1: {1:.3f}, accuracy: {2:.3f}, train_time: {3:.3f}, test_time: {4:.3f}".format(i, it_res['f1'], it_res['accuracy'], it_res["t_train"], it_res["runtime"]))
+
+        self.res["run"]["cv_f1"] = np.mean([x["f1"] for x in self.res["train"]])
+        self.res["run"]["cv_accuracy"] = np.mean([x["accuracy"] for x in self.res["train"]])
+        log.info("CV - f1: {:.3f}, accuracy: {:.3f}".format(self.res["run"]["cv_f1"], self.res["run"]["cv_accuracy"]))
 
 
     def test(self, X, y):
@@ -130,28 +148,10 @@ class TestCase():
 
 
     def log_results(self):
-        o = [self.ID,
-            self.datetime,
-            self.kernel,
-            self.C,
-            self.degree,
-            self.gamma,
-            self.folds,
-            self.pca,
-            "{0:.3f}".format(self.test_results["f1"]),
-            "{0:.3f}".format(self.test_results["accuracy"]),
-            len(self.X_train),
-            len(self.X_test),
-            "{0:.3f}".format(self.runtime),
-            "{0:.3f}".format(self.pca_time),
-            "{0:.3f}".format(self.train_time),
-            "{0:.3f}".format(self.test_results["runtime"])]
-        o_str = [str(x) for x in o]
-
         with open('results1.csv', 'a+') as f:
-            f.write(",".join(o_str) + "\n")
+            f.write(json.dumps(self.res) + "\n")
 
-        print("F - f1: {0:.3f}, accuracy: {1:.3f}, runtime: {2:.3f}".format(self.test_results["f1"], self.test_results["accuracy"], self.runtime))
+        print("F - f1: {0:.3f}, accuracy: {1:.3f}, runtime: {2:.3f}".format(self.res["test"]["f1"], self.res["test"]["accuracy"], self.res["run"]["runtime"]))
 
 
 
@@ -178,10 +178,10 @@ def load_data():
 def main():
     print("Loading data\n")
     X_full, y_full = load_data()
-    X_small = X_full[:200]
-    y_small = y_full[:200]
-    X_test = X_full[-40:]
-    y_test = y_full[-40:]
+    X_small = X_full[:100]
+    y_small = y_full[:100]
+    X_test = X_full[-20:]
+    y_test = y_full[-20:]
 
     # X_small = [[n/255 for n in x] for x in X_small]
     # X_test = [[n/255 for n in x] for x in X_test]
@@ -189,18 +189,18 @@ def main():
 
     # Task 2.1
     id = 0
-    # for pca in [None, 0.7, 0.5, 0.3, 0.1, 0.9, 0.8, 0.6, 0.4, 0.2]:
-    # 	TestCase(X_small, y_small, X_test, y_test, ID=id, kernel='linear', pca=pca, C=1)
-    # 	id += 1
+    for pca in [0.0, 0.7, 0.5, 0.3, 0.9, 0.8, 0.6, 0.4, 0.2]:
+    	TestCase(X_small, y_small, X_test, y_test, ID=id, kernel='linear', pca=pca, C=1)
+    	id += 1
 
     # Task 2.2
     for C in [100, 10, 1, 0.1, 0.01]:
 	    for gamma in ['scale', 'auto']:
 	    	for degree in [2, 3, 4]:
-	    		TestCase(X_small, y_small, X_test, y_test, ID=id, kernel='poly', pca=None, C=C, degree=degree, gamma=gamma)
+	    		TestCase(X_small, y_small, X_test, y_test, ID=id, kernel='poly', pca=0.0, C=C, degree=degree, gamma=gamma)
 	    		id += 1
 
-    		TestCase(X_small, y_small, X_test, y_test, ID=id, kernel='rbf', pca=None, C=C, gamma=gamma)
+    		TestCase(X_small, y_small, X_test, y_test, ID=id, kernel='rbf', pca=0.0, C=C, gamma=gamma)
     		id += 1
 
 
