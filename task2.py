@@ -128,6 +128,7 @@ class TestCase():
             log.info("{0} - f1: {1:.3f}, accuracy: {2:.3f}, train_time: {3:.3f}, test_time: {4:.3f}".format(i, it_res['f1'], it_res['accuracy'], it_res["t_train"], it_res["runtime"]))
 
         self.res["run"]["cv_f1"] = np.mean([x["f1"] for x in self.res["train"]])
+        self.res["run"]["cv_f1_classes"] = [np.mean([x["f1_classes"][j] for x in self.res["train"]]) for j in len(list(set(self.y_train))) ]
         self.res["run"]["cv_accuracy"] = np.mean([x["accuracy"] for x in self.res["train"]])
         log.info("CV - f1: {:.3f}, accuracy: {:.3f}".format(self.res["run"]["cv_f1"], self.res["run"]["cv_accuracy"]))
 
@@ -141,6 +142,7 @@ class TestCase():
         test_res["n_test"] = len(X)
         test_res["runtime"] = t_test
         test_res['f1'] = f1_score(y, y_pred, average='micro')
+        test_res['f1_classes'] = f1_score(y, y_pred, average=None)
         test_res['accuracy'] = accuracy_score(y, y_pred)
         return test_res
 
@@ -176,10 +178,10 @@ def load_data():
 def main():
     print("Loading data")
     X_full, y_full = load_data()
-    X_small = X_full[:15000]
-    y_small = y_full[:15000]
-    X_test = X_full[-3000:]
-    y_test = y_full[-3000:]
+    X_small = X_full[:3000]
+    y_small = y_full[:3000]
+    X_test = X_full[-300:]
+    y_test = y_full[-300:]
 
     # X_small = [[n/255 for n in x] for x in X_small]
     # X_test = [[n/255 for n in x] for x in X_test]
@@ -194,7 +196,7 @@ def main():
     # Task 2.2
     for C in [1000, 500, 100, 50, 10, 5, 1, 0.5, 0.1, 0.05, 0.01, 0.005, 0.001]:
         for degree in [2, 4, 6]:
-            TestCase(X_small, y_small, X_test, y_test, ID=id, kernel='poly', pca=1.0, C=C, degree=degree)
+            TestCase(X_small, y_small, X_test, y_test, ID=id, kernel='poly', pca=1.0, C=C, degree=degree, , gamma='auto')
             id += 1
         TestCase(X_small, y_small, X_test, y_test, ID=id, kernel='rbf', pca=1.0, C=C, gamma='auto')
         id += 1

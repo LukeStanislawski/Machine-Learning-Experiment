@@ -32,7 +32,14 @@ def main():
 	ploy_degree_v_acc(results)
 	ploy_degree_v_f1(results)
 
+
+	# General stats
+	t_runtime = sum([x["run"]["runtime"] for x in results])
+	print("Total runtime was {:.3f} seconds".format(t_runtime))
+
 	plt.show()
+
+
 
 
 def f1_v_pca(results):
@@ -71,7 +78,7 @@ def poly_c_v_acc(results):
 	# degrees = list(set([x["param"]["degree"] for x in k_poly]))
 	degrees = [2,4,6]
 	for i, degree in enumerate(degrees):
-		poly_vs_C = [x for x in k_poly if x["param"]["gamma"] == "auto" and x["param"]["degree"] == degree]
+		poly_vs_C = [x for x in k_poly if x["param"]["gamma"] == "scale" and x["param"]["degree"] == degree]
 		poly_vs_C = sorted(poly_vs_C, key = lambda i: i["param"]['C'])
 		poly_vs_C_C = [np.log10(x["param"]["C"]) for x in poly_vs_C]
 		poly_vs_C_acc = [x["run"]["cv_accuracy"] for x in poly_vs_C]
@@ -81,7 +88,7 @@ def poly_c_v_acc(results):
 	plt.title('Poly Accuracy of C Value')
 	plt.ylabel('Accuracy')
 	plt.xlabel('log(C)')
-	plt.legend(loc="upper right")
+	plt.legend(loc="lower right")
 	# plt.ylim(0.05, 0.3)
 
 
@@ -94,7 +101,7 @@ def poly_c_v_f1(results):
 	# degrees = list(set([x["param"]["degree"] for x in k_poly]))
 	degrees = [2,4,6]
 	for i, degree in enumerate(degrees):
-		poly_vs_C = [x for x in k_poly if x["param"]["gamma"] == "auto" and x["param"]["degree"] == degree]
+		poly_vs_C = [x for x in k_poly if x["param"]["gamma"] == "scale" and x["param"]["degree"] == degree]
 		poly_vs_C = sorted(poly_vs_C, key = lambda i: i["param"]['C'])
 		poly_vs_C_C = [np.log10(x["param"]["C"]) for x in poly_vs_C]
 		poly_vs_C_f1 = [x["run"]["cv_f1"] for x in poly_vs_C]
@@ -103,7 +110,7 @@ def poly_c_v_f1(results):
 	plt.title('Poly F1 Against C Value')
 	plt.ylabel('F1')
 	plt.xlabel('log(C)')
-	plt.legend(loc="upper right")
+	plt.legend(loc="lower right")
 	# plt.ylim(0.05, 0.3)
 
 
@@ -151,7 +158,7 @@ def ploy_degree_v_acc(results):
 		poly_vs_deg_acc = [x["run"]["cv_accuracy"] for x in poly_vs_deg]
 		plt.plot(poly_vs_deg_deg, poly_vs_deg_acc, graph_codes[i], label="C={}".format(C))
 
-	plt.title('Poly Accuracy Against Degree Value')
+	plt.title('Poly Accuracy Against Degree')
 	plt.ylabel('Accuracy')
 	plt.xlabel('Degree')
 	plt.legend(loc="upper right")
@@ -172,8 +179,8 @@ def ploy_degree_v_f1(results):
 		poly_vs_deg_f1 = [x["run"]["cv_f1"] for x in poly_vs_deg]
 		plt.plot(poly_vs_deg_deg, poly_vs_deg_f1, graph_codes[i], label="C={}".format(C))
 
-	plt.title('Poly Accuracy Against Degree Value')
-	plt.ylabel('Accuracy')
+	plt.title('Poly F1 Against Degree')
+	plt.ylabel('F1')
 	plt.xlabel('Degree')
 	plt.legend(loc="upper right")
 	# plt.ylim(0.05, 0.3)
@@ -185,9 +192,6 @@ def get_gn():
 	gn += 1
 	return gn
 
-# # General stats
-# t_runtime = sum([float(x["runtime"]) for x in results])
-# print("Total runtime was {} seconds.".format(t_runtime))
 
 if __name__ == "__main__":
 	main()
