@@ -35,8 +35,8 @@ def main(PATH):
 	poly_c_v_f1(results)
 	rbf_c_v_acc(results)
 	rbf_c_v_f1(results)
-	ploy_degree_v_acc(results)
-	ploy_degree_v_f1(results)
+	poly_degree_v_acc(results)
+	poly_degree_v_f1(results)
 
 
 	# General stats
@@ -47,26 +47,25 @@ def main(PATH):
 											results[0]["param"]["n_train"],
 											results[0]["param"]["n_test"]))
 	plt.show()
+	save_plots(results)
 
 
-
-
-def f1_v_pca(results):
+def f1_v_pca(results, sp=True):
 	# f1 against PCA
 	k_linear = [x for x in results if x["param"]["kernel"] == 'linear']
 	k_linear = sorted(k_linear, key = lambda i: i["param"]['pca'])
 	lin_pcas = [x["param"]["pca"] for x in k_linear]
 	lin_f1 = [x["run"]["cv_f1"] for x in k_linear]
 
-	plt.subplot(rows,cols,get_gn())
+	if sp: plt.subplot(rows,cols,get_gn())
 	plt.title('F1 Against PCA Dimentionality')
 	plt.ylabel('F1 Score')
 	plt.xlabel('Proportion of Original Dimentionality')
 	plt.plot(lin_pcas, lin_f1, get_lc(0))
 
 
-def acc_v_pca(results):
-	plt.subplot(rows,cols,get_gn())
+def acc_v_pca(results, sp=True):
+	if sp: plt.subplot(rows,cols,get_gn())
 	plt.title('Accuracy Against PCA Dimentionality')
 	plt.ylabel('Accuracy')
 	plt.xlabel('Proportion of Original Dimentionality')
@@ -84,9 +83,9 @@ def acc_v_pca(results):
 	plt.legend(loc="upper right")
 
 
-def poly_c_v_acc(results):
+def poly_c_v_acc(results, sp=True):
 	# poly: C vs accuracy
-	plt.subplot(rows,cols,get_gn())
+	if sp: plt.subplot(rows,cols,get_gn())
 	plt.title('Poly Accuracy of C Value')
 	plt.ylabel('Accuracy')
 	plt.xlabel('log(C)')
@@ -105,9 +104,9 @@ def poly_c_v_acc(results):
 	# plt.ylim(0.05, 0.3)
 
 
-def poly_c_v_f1(results):
+def poly_c_v_f1(results, sp=True):
 	# poly: C vs f1
-	plt.subplot(rows,cols,get_gn())
+	if sp: plt.subplot(rows,cols,get_gn())
 
 	k_poly = [x for x in results if x["param"]["kernel"] == 'poly']
 	# degrees = list(set([x["param"]["degree"] for x in k_poly]))
@@ -126,9 +125,9 @@ def poly_c_v_f1(results):
 	# plt.ylim(0.05, 0.3)
 
 
-def rbf_c_v_acc(results):
+def rbf_c_v_acc(results, sp=True):
 	# rbf: C vs accuracy
-	plt.subplot(rows,cols,get_gn())
+	if sp: plt.subplot(rows,cols,get_gn())
 	k_rbf = [x for x in results if x["param"]["kernel"] == 'rbf' and x["param"]["gamma"] == "auto"]
 	k_rbf = sorted(k_rbf, key = lambda i: i["param"]['C'])
 	
@@ -141,9 +140,9 @@ def rbf_c_v_acc(results):
 	# plt.ylim(0.05, 0.3)
 
 
-def rbf_c_v_f1(results):
+def rbf_c_v_f1(results, sp=True):
 	# rbf: C vs f1
-	plt.subplot(rows,cols,get_gn())
+	if sp: plt.subplot(rows,cols,get_gn())
 	plt.title('RBF F1 Against C Value')
 	plt.ylabel('F1')
 	plt.xlabel('log(C)')
@@ -163,8 +162,8 @@ def rbf_c_v_f1(results):
 	# plt.ylim(0.05, 0.3)
 
 
-def ploy_degree_v_acc(results):
-	plt.subplot(rows,cols,get_gn())
+def poly_degree_v_acc(results, sp=True):
+	if sp: plt.subplot(rows,cols,get_gn())
 
 	k_poly = [x for x in results if x["param"]["kernel"] == 'poly']
 	# Cs = list(set([x["param"]["C"] for x in k_poly]))
@@ -183,8 +182,8 @@ def ploy_degree_v_acc(results):
 	# plt.ylim(0.05, 0.3)
 
 
-def ploy_degree_v_f1(results):
-	plt.subplot(rows,cols,get_gn())
+def poly_degree_v_f1(results, sp=True):
+	if sp: plt.subplot(rows,cols,get_gn())
 
 	k_poly = [x for x in results if x["param"]["kernel"] == 'poly']
 	# Cs = list(set([x["param"]["C"] for x in k_poly]))
@@ -204,12 +203,12 @@ def ploy_degree_v_f1(results):
 
 
 
-def f1_pc_v_dimensionality(results):
-	plt.subplot(rows,cols,get_gn())
+def f1_pc_v_dimensionality(results, sp=True):
+	if sp: plt.subplot(rows,cols,get_gn())
 
 	k_linear = [x for x in results if x["param"]["kernel"] == 'linear']
 	k_linear = sorted(k_linear, key = lambda i: i["param"]['pca'])
-	pcas = sorted(list(set([x["param"]["pca"] for x in k_linear])))
+	pcas = [x["param"]["pca"] for x in k_linear]
 	
 	class_scores = []
 	for ci, c in enumerate(get_classes()):
@@ -221,10 +220,11 @@ def f1_pc_v_dimensionality(results):
 		plt.plot(pcas, res["f1s"], label=get_label(ci), marker=get_m(), linestyle=get_ls(),
           markerfacecolor=get_c(ci), markeredgecolor=get_c(ci), color=get_c(ci))
 
-	plt.title('Class F1 Against Proportion of Dimentionality')
-	plt.ylabel('F1')
+	plt.title('F1 Score Against Proportion of Dimentionality')
+	plt.ylabel('F1 Score')
 	plt.xlabel('Proportion of Dimentionality')
 	plt.legend(loc="upper right")
+
 
 
 def plot(x, y, i=0, label=None):
@@ -258,9 +258,53 @@ def get_lc(index):
 	return lcs[index]
 
 
+def save_plots(results):
+	p = "figs/{}.png"
+
+	plt.clf()
+	plt.figure(figsize=(10,6))
+	
+	f1_v_pca(results, sp=False)
+	plt.savefig(p.format("f1_v_pca"))
+
+	plt.clf()
+	acc_v_pca(results, sp=False)
+	plt.savefig(p.format("acc_v_pca"))
+
+	plt.clf()
+	f1_pc_v_dimensionality(results, sp=False)
+	plt.savefig(p.format("f1_pc_v_dimensionality"))
+
+	plt.clf()
+	poly_c_v_acc(results, sp=False)
+	plt.savefig(p.format("poly_c_v_acc"))
+
+	plt.clf()
+	poly_c_v_f1(results, sp=False)
+	plt.savefig(p.format("poly_c_v_f1"))
+
+	plt.clf()
+	rbf_c_v_acc(results, sp=False)
+	plt.savefig(p.format("rbf_c_v_acc"))
+
+	plt.clf()
+	rbf_c_v_f1(results, sp=False)
+	plt.savefig(p.format("rbf_c_v_f1"))
+
+	plt.clf()
+	poly_degree_v_acc(results, sp=False)
+	plt.savefig(p.format("poly_degree_v_acc"))
+
+	plt.clf()
+	poly_degree_v_f1(results, sp=False)
+	plt.savefig(p.format("poly_degree_v_f1"))
+
+	print("Images saved")
+
 if __name__ == "__main__":
 	if len(sys.argv) > 1:
 		main(str(sys.argv[1]))
 	else:
-		main('results1.csv')
+		f_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'results.csv')
+		main(f_path)
 		

@@ -159,19 +159,20 @@ class TestCase():
         test_res={}
         test_res["n_test"] = len(X)
         test_res["runtime"] = t_test
-        test_res['f1'] = f1_score(y, y_pred, average='micro')
+        test_res['f1'] = f1_score(y, y_pred, average='macro')
         test_res['f1_pc'] = list(f1_score(y, y_pred, labels=self.classes, average=None))
         test_res['accuracy'] = accuracy_score(y, y_pred)
-        test_res['precision'] = precision_score(y, y_pred, average='micro')
+        test_res['precision'] = precision_score(y, y_pred, average='macro')
         test_res['precision_pc'] = list(precision_score(y, y_pred, labels=self.classes, average=None))
-        test_res['recall'] = recall_score(y, y_pred, average='micro')
+        test_res['recall'] = recall_score(y, y_pred, average='macro')
         test_res['recall_pc'] = list(recall_score(y, y_pred, labels=self.classes, average=None))
 
         return test_res
 
 
     def log_results(self):
-        with open('results1.csv', 'a+') as f:
+        f_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'results.csv')
+        with open(f_path, 'a+') as f:
             f.write(json.dumps(self.res) + "\n")
 
         print("F - f1: {0:.3f}, accuracy: {1:.3f}, runtime: {2:.3f}".format(self.res["test"]["f1"], self.res["test"]["accuracy"], self.res["run"]["runtime"]))
@@ -207,11 +208,13 @@ def silence_warnings():
 
 def main():
     print("Loading data")
+    n_train = 200
+    n_test = 200
     X_full, y_full = load_data()
-    X_small = X_full[:3000]
-    y_small = y_full[:3000]
-    X_test = X_full[-500:]
-    y_test = y_full[-500:]
+    X_small = X_full[:n_train]
+    y_small = y_full[:n_train]
+    X_test = X_full[-1*n_test:]
+    y_test = y_full[-1*n_test:]
 
     # X_small = [[n/255 for n in x] for x in X_small]
     # X_test = [[n/255 for n in x] for x in X_test]

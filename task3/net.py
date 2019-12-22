@@ -1,6 +1,6 @@
 import torch.nn as nn
 import torch.nn.functional as F
-from torch.nn import Parameter as P
+# from torch.nn import Parameter as P
 
 def get_nets():
     return [Net(), FCN()]
@@ -27,19 +27,25 @@ class Net(nn.Module):
 
 
 class FCN(nn.Module):
-    def __init__(self):
-        self.id = "FCN"
-        self.datetime = None
+    def __init__(self, hidden_layers=1):
         super(FCN, self).__init__()
-        self.fc1 = P(nn.Linear(32 * 32 * 3, 1024))
-        self.fc2 = P(nn.Linear(1024, 64))
-        self.fc3 = P(nn.Linear(64, 10))
+
+        max_n = 32 * 32 * 3
+        step = int( (max_n -10) / (hidden_layers+1) )
+        n = max_n
+
+        self.fc_hidden = []
+        # self.fc_first = nn.Linear(max_n, n)
+        for i in range(hidden_layers):
+            self.fc_hidden.append(nn.Linear(n, n - step))
+            n = n - step
+        self.fc_last = nn.Linear(n, 10)
 
     def forward(self, x):
         x = x.view(-1, 32 * 32 * 3)
-        x = self.fc1(x)
-        x = self.fc2(x)
-        x = self.fc3(x)
+        for fc in self.fc_hidden:
+            x = fc(x)
+        x = self.fc_last(x)
         return x
 
 
