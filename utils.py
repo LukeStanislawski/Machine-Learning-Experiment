@@ -20,10 +20,16 @@ def load_data():
 	testloader = torch.utils.data.DataLoader(testset, batch_size=4,
 	                                         shuffle=False, num_workers=2)
 
-	classes = ('plane', 'car', 'bird', 'cat',
+	return trainset, trainloader, testset, testloader, get_classes()
+
+
+def get_classes():
+	return ('plane', 'car', 'bird', 'cat',
 	           'deer', 'dog', 'frog', 'horse', 'ship', 'truck')
 
-	return trainset, trainloader, testset, testloader, classes
+
+def get_label(index):
+	return get_classes()[index]
 
 
 def imshow(img):

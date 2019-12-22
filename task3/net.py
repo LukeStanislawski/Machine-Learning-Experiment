@@ -1,5 +1,10 @@
 import torch.nn as nn
 import torch.nn.functional as F
+from torch.nn import Parameter as P
+
+def get_nets():
+    return [Net(), FCN()]
+
 
 class Net(nn.Module):
     def __init__(self):
@@ -23,10 +28,12 @@ class Net(nn.Module):
 
 class FCN(nn.Module):
     def __init__(self):
+        self.id = "FCN"
+        self.datetime = None
         super(FCN, self).__init__()
-        self.fc1 = nn.Linear(32 * 32 * 3, 1024)
-        self.fc2 = nn.Linear(1024, 64)
-        self.fc3 = nn.Linear(64, 10)
+        self.fc1 = P(nn.Linear(32 * 32 * 3, 1024))
+        self.fc2 = P(nn.Linear(1024, 64))
+        self.fc3 = P(nn.Linear(64, 10))
 
     def forward(self, x):
         x = x.view(-1, 32 * 32 * 3)

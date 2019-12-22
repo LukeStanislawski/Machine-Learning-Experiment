@@ -16,6 +16,13 @@ trainset, trainloader, testset, testloader, classes = load_data()
 
 net = Net()
 
+for param in net.parameters():
+    print(type(param.data), param.size())
+
+import sys
+sys.exit()
+
+
 criterion = nn.CrossEntropyLoss()
 optimizer = optim.SGD(net.parameters(), lr=0.001, momentum=0.9)
 
