@@ -90,7 +90,7 @@ def poly_c_v_acc(results, sp=True):
 	plt.ylabel('Accuracy')
 	plt.xlabel('log(C)')
 
-	k_poly = [x for x in results if x["param"]["ID"].startswith("PvC")]
+	k_poly = [x for x in results if str(x["param"]["ID"]).startswith("PvC")]
 
 	for degree in range(9):
 		poly_vs_C = [x for x in k_poly if x["param"]["gamma"] == "scale" and x["param"]["degree"] == degree]
@@ -108,7 +108,7 @@ def poly_c_v_f1(results, sp=True):
 	# poly: C vs f1
 	if sp: plt.subplot(rows,cols,get_gn())
 
-	k_poly = [x for x in results if x["param"]["ID"].startswith("PvC")]
+	k_poly = [x for x in results if str(x["param"]["ID"]).startswith("PvC")]
 	# degrees = list(set([x["param"]["degree"] for x in k_poly]))
 	degrees = range(9)
 	for i, degree in enumerate(degrees):
@@ -129,15 +129,18 @@ def poly_c_v_f1(results, sp=True):
 def rbf_c_v_acc(results, sp=True):
 	# rbf: C vs accuracy
 	if sp: plt.subplot(rows,cols,get_gn())
-	k_rbf = [x for x in results if x["param"]["ID"].startswith("RBFvC")]
-	k_rbf = sorted(k_rbf, key = lambda i: i["param"]['C'])
-	
-	Cs = [np.log10(x["param"]["C"]) for x in k_rbf]
-	accs = [x["run"]["cv_accuracy"] for x in k_rbf]
-	plt.plot(Cs, accs, get_lc(2))
 	plt.title('RBF Accuracy Against C Value')
 	plt.ylabel('Accuracy')
 	plt.xlabel('log(C)')
+
+	k_rbf = [x for x in results if str(x["param"]["ID"]).startswith("RBFvC")]
+	k_rbf = sorted(k_rbf, key = lambda i: i["param"]['C'])
+	Cs = [np.log10(x["param"]["C"]) for x in k_rbf]
+	
+	t_accs = [x["test"]["accuracy"] for x in k_rbf]
+	plot(Cs, t_accs, 0, label="Test")
+	cv_accs = [x["run"]["cv_accuracy"] for x in k_rbf]
+	plot(Cs, cv_accs, 1, label="CV")
 	# plt.ylim(0.05, 0.3)
 
 
@@ -148,7 +151,7 @@ def rbf_c_v_f1(results, sp=True):
 	plt.ylabel('F1')
 	plt.xlabel('log(C)')
 
-	k_rbf = [x for x in results if x["param"]["ID"].startswith("RBFvC")]
+	k_rbf = [x for x in results if str(x["param"]["ID"]).startswith("RBFvC")]
 	k_rbf = sorted(k_rbf, key = lambda i: i["param"]['C'])
 	Cs = [np.log10(x["param"]["C"]) for x in k_rbf]
 
@@ -170,7 +173,7 @@ def poly_degree_v_acc(results, sp=True):
 	# Cs = list(set([x["param"]["C"] for x in k_poly]))
 	Cs = [3,5,7]
 	for i, C in enumerate(Cs):
-		poly_vs_deg = [x for x in k_poly if x["param"]["ID"].startswith("PvD")]
+		poly_vs_deg = [x for x in k_poly if str(x["param"]["ID"]).startswith("PvD")]
 		poly_vs_deg = sorted(poly_vs_deg, key = lambda i: i["param"]['degree'])
 		poly_vs_deg_deg = [x["param"]["degree"] for x in poly_vs_deg]
 		poly_vs_deg_acc = [x["run"]["cv_accuracy"] for x in poly_vs_deg]
@@ -190,7 +193,7 @@ def poly_degree_v_f1(results, sp=True):
 	# Cs = list(set([x["param"]["C"] for x in k_poly]))
 	Cs = [3,5,7]
 	for i, C in enumerate(Cs):
-		poly_vs_deg = [x for x in k_poly if x["param"]["ID"].startswith("PvD")]
+		poly_vs_deg = [x for x in k_poly if str(x["param"]["ID"]).startswith("PvD")]
 		poly_vs_deg = sorted(poly_vs_deg, key = lambda i: i["param"]['degree'])
 		poly_vs_deg_deg = [x["param"]["degree"] for x in poly_vs_deg]
 		poly_vs_deg_f1 = [x["run"]["cv_f1"] for x in poly_vs_deg]

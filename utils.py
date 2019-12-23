@@ -1,3 +1,4 @@
+import sys, os, logging
 import torch
 import torchvision
 import torchvision.transforms as transforms
@@ -19,8 +20,12 @@ def load_data():
 	                                       download=True, transform=transform)
 	testloader = torch.utils.data.DataLoader(testset, batch_size=4,
 	                                         shuffle=False, num_workers=2)
+	info = {}
+	info["n_train"] = len(trainset)
+	info["n_test"] = len(testset)
+	info["classes"] = get_classes()
 
-	return trainset, trainloader, testset, testloader, get_classes()
+	return trainset, trainloader, testset, testloader, info
 
 
 def get_classes():
@@ -37,6 +42,17 @@ def imshow(img):
     npimg = img.numpy()
     plt.imshow(np.transpose(npimg, (1, 2, 0)))
     plt.show()
+
+
+def get_logger(path):
+	log = logging.getLogger("file_out")
+	hdlr = logging.FileHandler(path)
+	formatter = logging.Formatter('"%(asctime)s [%(levelname)-5.5s]  %(message)s"')
+	hdlr.setFormatter(formatter)
+	log.addHandler(hdlr) 
+	log.setLevel(logging.INFO)
+	logging.getLogger().addHandler(logging.StreamHandler(sys.stdout))
+	return log
 
 
 # get some random training images
