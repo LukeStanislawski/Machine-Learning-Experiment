@@ -1,4 +1,5 @@
 import sys, os, time, datetime, logging, json, traceback
+sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 import numpy as np
 from sklearn.svm import SVC
 from sklearn.decomposition import PCA
@@ -6,34 +7,20 @@ from sklearn.model_selection import cross_val_score, KFold
 from sklearn.model_selection import ShuffleSplit
 from sklearn.metrics import f1_score, accuracy_score, precision_score, recall_score
 from scipy import stats
+from utils import get_logger
 
-log = logging.getLogger("file_out")
-hdlr = logging.FileHandler('task2.log')
-formatter = logging.Formatter('"%(asctime)s [%(levelname)-5.5s]  %(message)s"')
-hdlr.setFormatter(formatter)
-log.addHandler(hdlr) 
-log.setLevel(logging.INFO)
-logging.getLogger().addHandler(logging.StreamHandler(sys.stdout))
+log = get_logger(os.path.join(os.path.dirname(os.path.abspath(__file__)), 'task2.log'))
+
 
 class TestCase():
-    def __init__(self, 
-    	X_train, 
-    	y_train, 
-    	X_test, 
-    	y_test, 
-    	folds=10, 
-    	kernel='linear', 
-    	C=1.0, 
-    	degree=3, 
-    	gamma='scale', 
-    	ID="0", 
-    	pca=0.0):
+    def __init__(self, X_train, y_train, X_test, y_test, folds=10, kernel='linear', 
+            C=1.0, degree=3, gamma='scale', ID="0", pca=0.0):
 
         self.X_train = X_train
         self.y_train = y_train
         self.X_test = X_test
         self.y_test = y_test
-        self.classes = sorted(list(set(self.y_train)))  # = [1,2,3..n]
+        self.classes = sorted(list(set(self.y_train)))  # = [0,1,2,3,4,5,6,7,8,9]
         self.folds = folds
         self.kernel = kernel
         self.C = C
@@ -42,6 +29,7 @@ class TestCase():
         self.ID = ID
         self.pca = pca
 
+        # The results dict will get written to file as JSON
         self.res = {}
         self.res["test"] = {}
         self.res["train"] = []
@@ -63,10 +51,12 @@ class TestCase():
         log.info("Kernel: {}, C: {}, Folds: {}, PCA: {}, Degree: {}, Gamma: {}".format(self.kernel, self.C, self.folds, self.pca, self.degree, self.gamma))
 
         try:
-        	self.svc = SVC(kernel=self.kernel, C=self.C, gamma=self.gamma, degree=self.degree)
+            self.svc = SVC(kernel=self.kernel, C=self.C, gamma=self.gamma, degree=self.degree)
         except Exception as e:
-        	log.info("ERROR: Could not create SVC")
-            # log.info(e)
+            log.info("ERROR: Could not create SVC")
+            log.info(str(e))
+            log.info(sys.exc_info())
+            log.info(traceback.format_exc())
 
         try:
         	self.run()
@@ -128,6 +118,32 @@ class TestCase():
             self.res["train"].append(it_res)
             log.info("{0} - f1: {1:.3f}, accuracy: {2:.3f}, train_time: {3:.3f}, test_time: {4:.3f}".format(i, it_res['f1'], it_res['accuracy'], it_res["t_train"], it_res["runtime"]))
 
+        self.calculate_results()
+        log.info("CV - f1: {:.3f}, accuracy: {:.3f}".format(self.res["run"]["cv_f1"], self.res["run"]["cv_accuracy"]))
+
+
+    def test(self, X, y):
+        tstart = time.time()
+        y_pred = self.svc.predict(X)
+        t_test = time.time() - tstart
+
+        test_res={}
+        # test_res["y"] = list(y)
+        # test_res["y_pred"] = list(y_pred)
+        test_res["n_test"] = len(X)
+        test_res["runtime"] = t_test
+        test_res['f1'] = f1_score(y, y_pred, average='macro')
+        test_res['f1_pc'] = list(f1_score(y, y_pred, labels=self.classes, average=None))
+        test_res['accuracy'] = accuracy_score(y, y_pred)
+        test_res['precision'] = precision_score(y, y_pred, average='macro')
+        test_res['precision_pc'] = list(precision_score(y, y_pred, labels=self.classes, average=None))
+        test_res['recall'] = recall_score(y, y_pred, average='macro')
+        test_res['recall_pc'] = list(recall_score(y, y_pred, labels=self.classes, average=None))
+
+        return test_res
+
+
+    def calculate_results(self):
         self.res["run"]["cv_f1"] = np.mean([x["f1"] for x in self.res["train"]])
         self.res["run"]["cv_accuracy"] = np.mean([x["accuracy"] for x in self.res["train"]])
         self.res["run"]["cv_precision"] = np.mean([x["precision"] for x in self.res["train"]])
@@ -147,27 +163,6 @@ class TestCase():
             self.res["run"]["cv_f1_pc"].append(np.mean(f1s))
             self.res["run"]["cv_precision_pc"].append(np.mean(prs))
             self.res["run"]["cv_recall_pc"].append(np.mean(rcs))
-
-        log.info("CV - f1: {:.3f}, accuracy: {:.3f}".format(self.res["run"]["cv_f1"], self.res["run"]["cv_accuracy"]))
-
-
-    def test(self, X, y):
-        tstart = time.time()
-        y_pred = self.svc.predict(X)
-        t_test = time.time() - tstart
-
-        test_res={}
-        test_res["n_test"] = len(X)
-        test_res["runtime"] = t_test
-        test_res['f1'] = f1_score(y, y_pred, average='macro')
-        test_res['f1_pc'] = list(f1_score(y, y_pred, labels=self.classes, average=None))
-        test_res['accuracy'] = accuracy_score(y, y_pred)
-        test_res['precision'] = precision_score(y, y_pred, average='macro')
-        test_res['precision_pc'] = list(precision_score(y, y_pred, labels=self.classes, average=None))
-        test_res['recall'] = recall_score(y, y_pred, average='macro')
-        test_res['recall_pc'] = list(recall_score(y, y_pred, labels=self.classes, average=None))
-
-        return test_res
 
 
     def log_results(self):
@@ -208,8 +203,8 @@ def silence_warnings():
 
 def main():
     print("Loading data")
-    n_train = 200
-    n_test = 200
+    n_train = 300
+    n_test = 300
     X_full, y_full = load_data()
     X_small = X_full[:n_train]
     y_small = y_full[:n_train]
@@ -222,22 +217,23 @@ def main():
 
     # Task 2.1
     id = 0
+
     for pca in [1.0, 0.7, 0.5, 0.3, 0.9, 0.8, 0.6, 0.4, 0.2]:
     	TestCase(X_small, y_small, X_test, y_test, ID=id, kernel='linear', pca=pca, C=1)
     	id += 1
 
     # Task 2.2
-    for C in [1000, 500, 100, 50, 10, 5, 1, 0.5, 0.1, 0.05, 0.01, 0.005, 0.001]:
-        for degree in [2, 4, 6]:
-            TestCase(X_small, y_small, X_test, y_test, ID=id, kernel='poly', pca=1.0, C=C, degree=degree, gamma='auto')
+    for C in [100, 75, 50, 25, 10, 7.5, 5, 2.5, 1, 0.75, 0.5, 0.25, 0.1, 0.075, 0.05, 0.025, 0.01]:
+        for degree in [2,3,4]:
+            TestCase(X_small, y_small, X_test, y_test, ID="PvC{}".format(id), kernel='poly', pca=1.0, C=C, degree=degree, gamma='scale')
             id += 1
-        TestCase(X_small, y_small, X_test, y_test, ID=id, kernel='rbf', pca=1.0, C=C, gamma='auto')
+        TestCase(X_small, y_small, X_test, y_test, ID="RBFvC{}".format(id), kernel='rbf', pca=1.0, C=C, gamma='scale')
         id += 1
 
 
     for degree in range(9):
-        for C in [3, 5, 7]:
-            TestCase(X_small, y_small, X_test, y_test, ID=id, kernel='poly', pca=1.0, C=C, gamma='auto', degree=degree)
+        for C in [2, 3, 4]:
+            TestCase(X_small, y_small, X_test, y_test, ID="PvD{}".format(id), kernel='poly', pca=1.0, C=C, gamma='scale', degree=degree)
             id += 1
 
 

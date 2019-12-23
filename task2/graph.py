@@ -12,25 +12,28 @@ gn = 0
 def main(PATH):
 	global rows
 	global cols
+	
 	results = []
 	with open(PATH) as f:
 		lines = f.readlines()
-
 	for li, line in enumerate(lines):
 		results.append(json.loads(line))
 
 
 	plt.figure(figsize=(15,8))
+	plt.suptitle("Runtime: {:.3f}, Train Set: {}, Test Set: {}".format(
+											sum([x["run"]["runtime"] for x in results]),
+											results[0]["param"]["n_train"],
+											results[0]["param"]["n_test"]))
 	plt.subplots_adjust(bottom=0.08, top=0.9, left=0.08, right=0.95, wspace=0.2, hspace=0.4)
 	rows = 3
 	cols = 3
 
-	# Task 2.1 - 2.2
-	# f1_v_pca(results)
+	#--- Task 2.1 - 2.2 ---
 	acc_v_pca(results)
 	f1_pc_v_dimensionality(results)
-
-	# Task 2.3 - 2.4
+	# f1_v_pca(results)
+	#--- Task 2.3 - 2.4 ---
 	poly_c_v_acc(results)
 	poly_c_v_f1(results)
 	rbf_c_v_acc(results)
@@ -39,16 +42,13 @@ def main(PATH):
 	poly_degree_v_f1(results)
 
 
-	# General stats
-	t_runtime = sum([x["run"]["runtime"] for x in results])
-	print("Total runtime was {:.3f} seconds".format(t_runtime))
-
-	plt.suptitle("Runtime: {:.3f}, Train Set: {}, Test Set: {}".format(t_runtime, 
-											results[0]["param"]["n_train"],
-											results[0]["param"]["n_test"]))
 	plt.show()
-	save_plots(results)
+	# save_plots(results)
 
+
+
+# Graphing Functions
+# ------------------
 
 def f1_v_pca(results, sp=True):
 	# f1 against PCA
@@ -90,15 +90,15 @@ def poly_c_v_acc(results, sp=True):
 	plt.ylabel('Accuracy')
 	plt.xlabel('log(C)')
 
-	k_poly = [x for x in results if x["param"]["kernel"] == 'poly']
-	# degrees = list(set([x["param"]["degree"] for x in k_poly]))
-	degrees = [2,4,6]
-	for i, degree in enumerate(degrees):
-		poly_vs_C = [x for x in k_poly if x["param"]["gamma"] == "auto" and x["param"]["degree"] == degree]
-		poly_vs_C = sorted(poly_vs_C, key = lambda i: i["param"]['C'])
-		poly_vs_C_C = [np.log10(x["param"]["C"]) for x in poly_vs_C]
-		poly_vs_C_acc = [x["run"]["cv_accuracy"] for x in poly_vs_C]
-		plt.plot(poly_vs_C_C, poly_vs_C_acc, get_lc(i), label="Degree={}".format(degree))
+	k_poly = [x for x in results if x["param"]["ID"].startswith("PvC")]
+
+	for degree in range(9):
+		poly_vs_C = [x for x in k_poly if x["param"]["gamma"] == "scale" and x["param"]["degree"] == degree]
+		if len(poly_vs_C) > 0:
+			poly_vs_C = sorted(poly_vs_C, key = lambda i: i["param"]['C'])
+			poly_vs_C_C = [np.log10(x["param"]["C"]) for x in poly_vs_C]
+			poly_vs_C_acc = [x["run"]["cv_accuracy"] for x in poly_vs_C]
+			plt.plot(poly_vs_C_C, poly_vs_C_acc, get_lc(degree), label="Degree={}".format(degree))
 
 	plt.legend(loc="lower right")
 	# plt.ylim(0.05, 0.3)
@@ -108,15 +108,16 @@ def poly_c_v_f1(results, sp=True):
 	# poly: C vs f1
 	if sp: plt.subplot(rows,cols,get_gn())
 
-	k_poly = [x for x in results if x["param"]["kernel"] == 'poly']
+	k_poly = [x for x in results if x["param"]["ID"].startswith("PvC")]
 	# degrees = list(set([x["param"]["degree"] for x in k_poly]))
-	degrees = [2,4,6]
+	degrees = range(9)
 	for i, degree in enumerate(degrees):
-		poly_vs_C = [x for x in k_poly if x["param"]["gamma"] == "auto" and x["param"]["degree"] == degree]
-		poly_vs_C = sorted(poly_vs_C, key = lambda i: i["param"]['C'])
-		poly_vs_C_C = [np.log10(x["param"]["C"]) for x in poly_vs_C]
-		poly_vs_C_f1 = [x["run"]["cv_f1"] for x in poly_vs_C]
-		plt.plot(poly_vs_C_C, poly_vs_C_f1, get_lc(i), label="Degree={}".format(degree))
+		poly_vs_C = [x for x in k_poly if x["param"]["gamma"] == "scale" and x["param"]["degree"] == degree]
+		if len(poly_vs_C) > 0:
+			poly_vs_C = sorted(poly_vs_C, key = lambda i: i["param"]['C'])
+			poly_vs_C_C = [np.log10(x["param"]["C"]) for x in poly_vs_C]
+			poly_vs_C_f1 = [x["run"]["cv_f1"] for x in poly_vs_C]
+			plt.plot(poly_vs_C_C, poly_vs_C_f1, get_lc(i), label="Degree={}".format(degree))
 
 	plt.title('Poly F1 Against C Value')
 	plt.ylabel('F1')
@@ -128,7 +129,7 @@ def poly_c_v_f1(results, sp=True):
 def rbf_c_v_acc(results, sp=True):
 	# rbf: C vs accuracy
 	if sp: plt.subplot(rows,cols,get_gn())
-	k_rbf = [x for x in results if x["param"]["kernel"] == 'rbf' and x["param"]["gamma"] == "auto"]
+	k_rbf = [x for x in results if x["param"]["ID"].startswith("RBFvC")]
 	k_rbf = sorted(k_rbf, key = lambda i: i["param"]['C'])
 	
 	Cs = [np.log10(x["param"]["C"]) for x in k_rbf]
@@ -147,7 +148,7 @@ def rbf_c_v_f1(results, sp=True):
 	plt.ylabel('F1')
 	plt.xlabel('log(C)')
 
-	k_rbf = [x for x in results if x["param"]["kernel"] == 'rbf' and x["param"]["gamma"] == "auto"]
+	k_rbf = [x for x in results if x["param"]["ID"].startswith("RBFvC")]
 	k_rbf = sorted(k_rbf, key = lambda i: i["param"]['C'])
 	Cs = [np.log10(x["param"]["C"]) for x in k_rbf]
 
@@ -169,7 +170,7 @@ def poly_degree_v_acc(results, sp=True):
 	# Cs = list(set([x["param"]["C"] for x in k_poly]))
 	Cs = [3,5,7]
 	for i, C in enumerate(Cs):
-		poly_vs_deg = [x for x in k_poly if x["param"]["gamma"] == "auto" and x["param"]["C"] == C]
+		poly_vs_deg = [x for x in k_poly if x["param"]["ID"].startswith("PvD")]
 		poly_vs_deg = sorted(poly_vs_deg, key = lambda i: i["param"]['degree'])
 		poly_vs_deg_deg = [x["param"]["degree"] for x in poly_vs_deg]
 		poly_vs_deg_acc = [x["run"]["cv_accuracy"] for x in poly_vs_deg]
@@ -189,7 +190,7 @@ def poly_degree_v_f1(results, sp=True):
 	# Cs = list(set([x["param"]["C"] for x in k_poly]))
 	Cs = [3,5,7]
 	for i, C in enumerate(Cs):
-		poly_vs_deg = [x for x in k_poly if x["param"]["gamma"] == 'auto' and x["param"]["C"] == C]
+		poly_vs_deg = [x for x in k_poly if x["param"]["ID"].startswith("PvD")]
 		poly_vs_deg = sorted(poly_vs_deg, key = lambda i: i["param"]['degree'])
 		poly_vs_deg_deg = [x["param"]["degree"] for x in poly_vs_deg]
 		poly_vs_deg_f1 = [x["run"]["cv_f1"] for x in poly_vs_deg]
@@ -227,6 +228,9 @@ def f1_pc_v_dimensionality(results, sp=True):
 
 
 
+# Plotting helper functions
+# -------------------------
+
 def plot(x, y, i=0, label=None):
 	plt.plot(x, y, 
 		label=label, 
@@ -236,27 +240,35 @@ def plot(x, y, i=0, label=None):
         markeredgecolor=get_c(i), 
         color=get_c(i))
 
-
+# Graph number incrementer
 def get_gn():
 	global gn
 	gn += 1
 	return gn
 
+# Graph point code
 def get_m():
 	return "o"
 
+# Graph line type
 def get_ls():
 	return "--"
 
+# Color codes
 def get_c(index):
 	cs = ['b', 'g', 'r', 'c', 'm', 'y', 'k', '#333399', '#BDC3C7', '#34495E']
 	return cs[index]
 
+# Matplotlib line code
+# DEPRECATED
 def get_lc(index):
 	cs = ['b', 'g', 'r', 'c', 'm', 'y', 'k', 'r', 'g', 'r']
 	lcs = ["{}{}{}".format(get_m(), c, get_ls()) for c in cs]
 	return lcs[index]
 
+
+# Writing plots to file
+# ---------------------
 
 def save_plots(results):
 	p = "figs/{}.png"
@@ -301,6 +313,8 @@ def save_plots(results):
 
 	print("Images saved")
 
+
+# If no filepath passed in use results.csv
 if __name__ == "__main__":
 	if len(sys.argv) > 1:
 		main(str(sys.argv[1]))
