@@ -195,15 +195,14 @@ def load_data():
 
 
 def silence_warnings():
-    def warn(*args, **kwargs):
-        pass
+    def warn(*args, **kwargs): pass
     import warnings
     warnings.warn = warn
 
 
 def main():
     print("Loading data")
-    n_train = 300
+    n_train = 600
     n_test = 300
     X_full, y_full = load_data()
     X_small = X_full[:n_train]
@@ -218,12 +217,12 @@ def main():
     # Task 2.1
     id = 0
 
-    for pca in [1.0, 0.7, 0.5, 0.3, 0.9, 0.8, 0.6, 0.4, 0.2]:
+    for pca in [1.0, 0.9, 0.8, 0.7, 0.6, 0.5, 0.4, 0.3, 0.2]:
     	TestCase(X_small, y_small, X_test, y_test, ID=id, kernel='linear', pca=pca, C=1)
     	id += 1
 
     # Task 2.2
-    for C in [100, 75, 50, 25, 10, 7.5, 5, 2.5, 1, 0.75, 0.5, 0.25, 0.1, 0.075, 0.05, 0.025, 0.01]:
+    for C in [100000, 10000, 1000, 100, 10, 1, 0.1, 0.01, 0.001, 0.0001]:
         for degree in [2,3,4]:
             TestCase(X_small, y_small, X_test, y_test, ID="PvC{}".format(id), kernel='poly', pca=1.0, C=C, degree=degree, gamma='scale')
             id += 1

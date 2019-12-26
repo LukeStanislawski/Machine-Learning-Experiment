@@ -43,7 +43,7 @@ def main(PATH):
 
 
 	plt.show()
-	# save_plots(results)
+	save_plots(results)	# For rendering in Markdown
 
 
 
@@ -86,7 +86,7 @@ def acc_v_pca(results, sp=True):
 def poly_c_v_acc(results, sp=True):
 	# poly: C vs accuracy
 	if sp: plt.subplot(rows,cols,get_gn())
-	plt.title('Poly Accuracy of C Value')
+	plt.title('Accuracy of Polynomial Kernel against C Value')
 	plt.ylabel('Accuracy')
 	plt.xlabel('log(C)')
 
@@ -106,18 +106,17 @@ def poly_c_v_acc(results, sp=True):
 
 def poly_c_v_f1(results, sp=True):
 	# poly: C vs f1
+	degree = 3
 	if sp: plt.subplot(rows,cols,get_gn())
 
-	k_poly = [x for x in results if str(x["param"]["ID"]).startswith("PvC")]
-	# degrees = list(set([x["param"]["degree"] for x in k_poly]))
-	degrees = range(9)
-	for i, degree in enumerate(degrees):
-		poly_vs_C = [x for x in k_poly if x["param"]["gamma"] == "scale" and x["param"]["degree"] == degree]
-		if len(poly_vs_C) > 0:
-			poly_vs_C = sorted(poly_vs_C, key = lambda i: i["param"]['C'])
-			poly_vs_C_C = [np.log10(x["param"]["C"]) for x in poly_vs_C]
-			poly_vs_C_f1 = [x["run"]["cv_f1"] for x in poly_vs_C]
-			plt.plot(poly_vs_C_C, poly_vs_C_f1, get_lc(i), label="Degree={}".format(degree))
+	k_poly = [x for x in results if str(x["param"]["ID"]).startswith("PvC") and x["param"]["degree"] == degree]
+	k_poly = sorted(k_poly, key = lambda i: i["param"]['C'])
+	log_C = [np.log10(x["param"]["C"]) for x in k_poly]
+
+	# scores = []
+	for ci, c in enumerate(get_classes()):
+		f1s = [x["test"]["f1_pc"][ci] for x in k_poly]
+		plot(log_C, f1s, ci, label="{}".format(get_label(ci)))
 
 	plt.title('Poly F1 Against C Value')
 	plt.ylabel('F1')
@@ -141,6 +140,7 @@ def rbf_c_v_acc(results, sp=True):
 	plot(Cs, t_accs, 0, label="Test")
 	cv_accs = [x["run"]["cv_accuracy"] for x in k_rbf]
 	plot(Cs, cv_accs, 1, label="CV")
+	plt.legend(loc="lower right")
 	# plt.ylim(0.05, 0.3)
 
 
@@ -161,7 +161,7 @@ def rbf_c_v_f1(results, sp=True):
 		plot(Cs, f1s, i=ci, label=get_label(ci))
 	
 	
-	plt.legend(loc="upper right")
+	plt.legend(loc="lower right")
 	# f1s = [x["run"]["cv_f1"] for x in k_rbf]
 	# plt.ylim(0.05, 0.3)
 
@@ -171,9 +171,9 @@ def poly_degree_v_acc(results, sp=True):
 
 	k_poly = [x for x in results if x["param"]["kernel"] == 'poly']
 	# Cs = list(set([x["param"]["C"] for x in k_poly]))
-	Cs = [3,5,7]
+	Cs = [2,3,4]
 	for i, C in enumerate(Cs):
-		poly_vs_deg = [x for x in k_poly if str(x["param"]["ID"]).startswith("PvD")]
+		poly_vs_deg = [x for x in k_poly if str(x["param"]["ID"]).startswith("PvD") and x["param"]["C"] == C]
 		poly_vs_deg = sorted(poly_vs_deg, key = lambda i: i["param"]['degree'])
 		poly_vs_deg_deg = [x["param"]["degree"] for x in poly_vs_deg]
 		poly_vs_deg_acc = [x["run"]["cv_accuracy"] for x in poly_vs_deg]
@@ -191,9 +191,9 @@ def poly_degree_v_f1(results, sp=True):
 
 	k_poly = [x for x in results if x["param"]["kernel"] == 'poly']
 	# Cs = list(set([x["param"]["C"] for x in k_poly]))
-	Cs = [3,5,7]
+	Cs = [2,3,4]
 	for i, C in enumerate(Cs):
-		poly_vs_deg = [x for x in k_poly if str(x["param"]["ID"]).startswith("PvD")]
+		poly_vs_deg = [x for x in k_poly if str(x["param"]["ID"]).startswith("PvD") and x["param"]["C"] == C]
 		poly_vs_deg = sorted(poly_vs_deg, key = lambda i: i["param"]['degree'])
 		poly_vs_deg_deg = [x["param"]["degree"] for x in poly_vs_deg]
 		poly_vs_deg_f1 = [x["run"]["cv_f1"] for x in poly_vs_deg]
@@ -214,7 +214,7 @@ def f1_pc_v_dimensionality(results, sp=True):
 	k_linear = sorted(k_linear, key = lambda i: i["param"]['pca'])
 	pcas = [x["param"]["pca"] for x in k_linear]
 	
-	class_scores = []
+	# class_scores = []
 	for ci, c in enumerate(get_classes()):
 		res = {}
 		res["f1s"] = [x["test"]["f1_pc"][ci] for x in k_linear]
