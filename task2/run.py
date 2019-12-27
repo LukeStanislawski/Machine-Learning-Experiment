@@ -202,16 +202,16 @@ def silence_warnings():
 
 def main():
     print("Loading data")
-    n_train = 600
-    n_test = 300
+    n_train = 3000
+    n_test = 500
     X_full, y_full = load_data()
     X_small = X_full[:n_train]
     y_small = y_full[:n_train]
     X_test = X_full[-1*n_test:]
     y_test = y_full[-1*n_test:]
 
-    # X_small = [[n/255 for n in x] for x in X_small]
-    # X_test = [[n/255 for n in x] for x in X_test]
+    X_small = [[n/255 for n in x] for x in X_small]
+    X_test = [[n/255 for n in x] for x in X_test]
 
 
     # Task 2.1
@@ -230,8 +230,9 @@ def main():
         id += 1
 
 
-    for degree in range(9):
-        for C in [2, 3, 4]:
+    for degree in range(12):
+       # for C in [2, 3, 4]:
+        for C in [3]:
             TestCase(X_small, y_small, X_test, y_test, ID="PvD{}".format(id), kernel='poly', pca=1.0, C=C, gamma='scale', degree=degree)
             id += 1
 

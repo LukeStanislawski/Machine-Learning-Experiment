@@ -43,7 +43,7 @@ def main(PATH):
 
 
 	plt.show()
-	save_plots(results)	# For rendering in Markdown
+	# save_plots(results)	# For rendering in Markdown
 
 
 
@@ -58,7 +58,7 @@ def f1_v_pca(results, sp=True):
 	lin_f1 = [x["run"]["cv_f1"] for x in k_linear]
 
 	if sp: plt.subplot(rows,cols,get_gn())
-	plt.title('F1 Against PCA Dimentionality')
+	plt.title('Linear Kernel F1 Score Against PCA Dimentionality')
 	plt.ylabel('F1 Score')
 	plt.xlabel('Proportion of Original Dimentionality')
 	plt.plot(lin_pcas, lin_f1, get_lc(0))
@@ -66,7 +66,7 @@ def f1_v_pca(results, sp=True):
 
 def acc_v_pca(results, sp=True):
 	if sp: plt.subplot(rows,cols,get_gn())
-	plt.title('Accuracy Against PCA Dimentionality')
+	plt.title('Linear Kernel Accuracy Against PCA Dimentionality')
 	plt.ylabel('Accuracy')
 	plt.xlabel('Proportion of Original Dimentionality')
 
@@ -118,7 +118,7 @@ def poly_c_v_f1(results, sp=True):
 		f1s = [x["test"]["f1_pc"][ci] for x in k_poly]
 		plot(log_C, f1s, ci, label="{}".format(get_label(ci)))
 
-	plt.title('Poly F1 Against C Value')
+	plt.title('Polynomial Kernel F1 Score Against C Value')
 	plt.ylabel('F1')
 	plt.xlabel('log(C)')
 	plt.legend(loc="lower right")
@@ -128,7 +128,7 @@ def poly_c_v_f1(results, sp=True):
 def rbf_c_v_acc(results, sp=True):
 	# rbf: C vs accuracy
 	if sp: plt.subplot(rows,cols,get_gn())
-	plt.title('RBF Accuracy Against C Value')
+	plt.title('RBF Kernel Accuracy Against C Value')
 	plt.ylabel('Accuracy')
 	plt.xlabel('log(C)')
 
@@ -147,7 +147,7 @@ def rbf_c_v_acc(results, sp=True):
 def rbf_c_v_f1(results, sp=True):
 	# rbf: C vs f1
 	if sp: plt.subplot(rows,cols,get_gn())
-	plt.title('RBF F1 Against C Value')
+	plt.title('RBF Kernel F1 Score Against C Value')
 	plt.ylabel('F1')
 	plt.xlabel('log(C)')
 
@@ -171,15 +171,18 @@ def poly_degree_v_acc(results, sp=True):
 
 	k_poly = [x for x in results if x["param"]["kernel"] == 'poly']
 	# Cs = list(set([x["param"]["C"] for x in k_poly]))
-	Cs = [2,3,4]
+	# Cs = [2,3,4]
+	Cs = [3]
 	for i, C in enumerate(Cs):
 		poly_vs_deg = [x for x in k_poly if str(x["param"]["ID"]).startswith("PvD") and x["param"]["C"] == C]
 		poly_vs_deg = sorted(poly_vs_deg, key = lambda i: i["param"]['degree'])
 		poly_vs_deg_deg = [x["param"]["degree"] for x in poly_vs_deg]
-		poly_vs_deg_acc = [x["run"]["cv_accuracy"] for x in poly_vs_deg]
-		plt.plot(poly_vs_deg_deg, poly_vs_deg_acc, get_lc(i), label="C={}".format(C))
+		poly_vs_deg_cv_acc = [x["run"]["cv_accuracy"] for x in poly_vs_deg]
+		poly_vs_deg_test_acc = [x["test"]["accuracy"] for x in poly_vs_deg]
+		plt.plot(poly_vs_deg_deg, poly_vs_deg_cv_acc, get_lc(0), label="CV Accuracy")
+		plt.plot(poly_vs_deg_deg, poly_vs_deg_test_acc, get_lc(1), label="Test Accuracy")
 
-	plt.title('Poly Accuracy Against Degree')
+	plt.title('Polynomial Kernel Accuracy Against Degree')
 	plt.ylabel('Accuracy')
 	plt.xlabel('Degree')
 	plt.legend(loc="upper right")
@@ -199,7 +202,7 @@ def poly_degree_v_f1(results, sp=True):
 		poly_vs_deg_f1 = [x["run"]["cv_f1"] for x in poly_vs_deg]
 		plt.plot(poly_vs_deg_deg, poly_vs_deg_f1, get_lc(i), label="C={}".format(C))
 
-	plt.title('Poly F1 Against Degree')
+	plt.title('Polynomial Kernel F1 Score Against Degree')
 	plt.ylabel('F1')
 	plt.xlabel('Degree')
 	plt.legend(loc="upper right")

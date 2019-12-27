@@ -2,7 +2,7 @@
 
 ## Task1
 
-> TODO
+> TODO?
 
 ## Task2
 
@@ -17,9 +17,7 @@ A | B
 
 ![f1_pc_v_dimensionality](task2/figs/f1_pc_v_dimensionality.png)
 
-Above are the results of the overall accuracy of a Linear SVM when run against data that has been reducing in dimensionality at varying levels by using PCA. The SVM was run with a C value of 1. The results show a decrease in accuracy with a decrease in dimensionality. This is to be expected as PCA removes information from the data. What's more, PCA attempts to remove the least important information when reducing dimensionality, so we can expect the rate of change of accuracy to also be decreasing. The accuracy score produced by testing on test data is also lower than the score produced by cross validation. This is because, the model is trained on the same data used to calculate the validation scores. If we were to productionise this model we would use PCA to convert the data to a dimensionality of 60% of the original as this is the point where we lose minimal/no accuracy.
-
-The F1 scores for each class are a considerably more noisy as they have each been trained on effectively one tenth of the size of data. 
+Above are the results of the overall accuracy of a Linear SVM when run against data that has been reducing in dimensionality at varying levels by using PCA. The SVM was run with a C value of 1. The results show a decrease in accuracy with a decrease in dimensionality. This is to be expected as PCA removes information from the data. What's more, PCA attempts to remove the least important information when reducing dimensionality, so we can expect the rate of change of accuracy to also be decreasing. The accuracy score produced by testing on test data is also lower than the score produced by cross validation. This is because, the model is trained on the same data used to calculate the validation scores and will therefore be better at classifying the images. If we were to productionise this model we would use PCA to convert the data to a dimensionality of approximately 60% of the original dimensionality as this is the point where we lose minimal/no accuracy. The F1 scores for each class are a considerably more noisy as they have each been trained on effectively one tenth of the size of data. 
 
 ### Polynomial Kernel SVM:
 
@@ -31,7 +29,7 @@ From the chart above we can see that the more optimal combination of degree and 
 
 ![ploy_degree_v_acc](task2/figs/poly_degree_v_acc.png)
 
-The graph above shows accuracy results of a changing polynomial kernel degree. The curve peaks at a polynomial value of 2, after which the SVM is likely overfitting to the training data. From degree 0 (linear) to degree 2, the kernel is making appropriate generalisations of the data.
+The graph above shows accuracy results of a changing polynomial kernel degree. The curve peaks at a polynomial value of 2, after which the accuracy begins to drop. This is likely because the kernel function is to From degree 0 (linear) to degree 2, the kernel is making appropriate generalisations of the data.
 
 ### RBF Kernel SVM
 
@@ -47,29 +45,64 @@ The graph above shows that for a value of C < 0.05, the F1 scores for each class
 
 ### Full Connected Network
 
-I created a class `FCN()` which takes as parameter a number n of hidden layers. The class creates the number of hidden layers, output layer. Each of the hidden layers has 3072 channels, therefore there is no information lass at each layer.
+I decided to start at the conceptually simplest level; an FCN. I picked the following parameters as they are considered to be typical:
+
+- Learning rate: 0.001
+- Momentum: 0.9
+- Epochs: 2
+
+I created a class `FCN()` which takes as parameter a number n of hidden layers. The class creates the number of hidden layers of size 3072 (3 * 32 * 32), and one output layer. As each of the hidden layers has 3072 channels, therefore there is no information loss at each layer.
 
 ![FCN_ttrain_v_hl](task3/figs/FCN_acc_v_hl.png)
 
-The graph above shows that the accuracy of model increase with each layer added until plateauing at around X hidden layers. This is an example of X whereby the earlier layers have trained on the output less.
+| Hidden Layers | Accuracy |
+| ------------- | -------- |
+| 1             | 0.3675   |
+| 2             | 0.3989   |
+| 3             | 0.3945   |
 
-> TODO: fix whatever it is im talking about here
+The graph above shows that the accuracy of model increase with each layer added until plateauing at around X hidden layers. This is an example of the vanishing gradient problem whereby the optimal decision surface for the problem requires fewer hidden layers than the model has. Therefore it would require significantly more data in order to train the model to the same level of accuracy as a model with fewer layers.
 
-### Convolutions
+> TODO: does or doesn't this happen?
 
-Most models online use convolutional layers in order to decrease training time and allow for greater parameter tuning. I decided to try my model with two, three and four layers of convolutions, all connected to two linear layers of fully connected nodes.
+As I will be adding convolutional layers and pooling kernels I do not require the fully connected layers of my graph to be able to produce the most optimal decision boundary by themselves. Therefore I believe 2 fully connected layers for my model should be enough to define detailed enough decision boundaries.
+
+### Adding Convolution Layers
+
+Most models online use convolutional layers in order to decrease training time and allow for greater parameter tuning. I decided to try my model with two, three and four layers of convolutions, all connected to two linear layers of fully connected nodes. After each convolutional layer, I apply a maxpooling layer with a size of 4 and a stride of 4.
 
 > TODO: Reword
 
 | Model ID | Number of convolutional layers | Accuracy | Average F1 Score |
 | -------- | ------------------------------ | -------- | ---------------- |
-| Conv1    | 1                              |          |                  |
-| Conv2    | 2                              |          |                  |
-| Conv3    | 3                              |          |                  |
+| Conv1    | 1                              | 0.3481   |                  |
+| Conv2    | 2                              | 0.4702   |                  |
+| Conv3    | 3                              | 0.4534   |                  |
 
-### Pooling
+Based off the results from this test, I decided that my model should have X convolution layers.
 
+### Trialing Different Pooling Layers
 
+I have decided to try out different pooling layers before tuning the parameters of the pooling layer.
+
+| Method  | Accuracy |
+| ------- | -------- |
+| MaxPool | 0.4702   |
+| AvgPool | 0.3469   |
+
+This is often the case as MaxPool favours the most significant features detected by the convolution layer rather than the average case.
+
+### Activation Functions
+
+I decided to try the following activation functions:
+
+| Activation Function | Accuracy | F1   |
+| ------------------- | -------- | ---- |
+| None                | 0.4702   |      |
+| ReLU                | 0.5863   |      |
+| Sigmoid             | 0.1924   |      |
+| SoftMax             | 0.1000   |      |
+| Tanh                | 0.1000   |      |
 
 
 

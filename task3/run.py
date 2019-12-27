@@ -9,7 +9,8 @@ import torch.nn as nn
 import torch.nn.functional as F
 import torch.optim as optim
 from utils import load_data, imshow, get_label
-from nets import FCN, FCN2, MainNet, Conv1, Conv2, Conv3
+from nets import FCN, FCN2, MainNet, Conv1, Conv2, Conv3, AvgPool
+from nets import ReLU, Sigmoid, SoftMax, Tanh
 from sklearn.metrics import accuracy_score, f1_score, precision_score, recall_score
 
 
@@ -42,10 +43,14 @@ class RunTest():
 
 
     def main(self):
+        startime = time.time()
+
         self.train()
-        self.save(self.id)
+        # self.save(self.id)
         # self.load(self.id)
         self.res["test"] = self.test()
+
+        self.res["runtime"] = time.time() - startime
         self.save_results()
 
 
@@ -57,7 +62,7 @@ class RunTest():
             print("Epoch: {}".format(epoch+1))
             running_loss = 0.0
             for i, data in enumerate(self.trainloader, 0):
-                if i <= 2000:
+                if i <= 30000 or False:
                     # get the inputs; data is a list of [inputs, labels]
                     inputs, labels = data
 
@@ -126,16 +131,10 @@ class RunTest():
 
 
 def silence_warnings():
-    def warn(*args, **kwargs):
-        pass
+    def warn(*args, **kwargs): pass
     import warnings
     warnings.warn = warn
-
-
-
-# def test_FCN(params, trainloader, testloader, layers=[1,2,3]):
     
-
 
 
 def main():
@@ -149,14 +148,35 @@ def main():
 
 
     params["model"] = "FCN"
+    params["tid"] = 0
     for layer in [1, 2, 3]:
+        params["hidden_layers"] = layer
         RunTest(FCN2(hidden_layers=layer), params, trainloader, testloader, id="FCN_{}".format(layer))
 
 
     params["model"] = "ConvX"
+    params["tid"] = 2
     RunTest(Conv1(), params, trainloader, testloader, id="Conv1")
     RunTest(Conv2(), params, trainloader, testloader, id="Conv2")
     RunTest(Conv3(), params, trainloader, testloader, id="Conv3")
+
+
+    params["tid"] = 3
+    params["model"] = "AvgPool"
+    RunTest(AvgPool(), params, trainloader, testloader, id="AvgPool")
+
+
+    params["tid"] = 4
+    params["model"] = "ReLU"
+    RunTest(ReLU(), params, trainloader, testloader, id="ReLU")
+    params["model"] = "Sigmoid"
+    RunTest(Sigmoid(), params, trainloader, testloader, id="Sigmoid")
+    params["model"] = "SoftMax"
+    RunTest(SoftMax(), params, trainloader, testloader, id="SoftMax")
+    params["model"] = "Tanh"
+    RunTest(SoftMax(), params, trainloader, testloader, id="Tanh")
+
+
 
 
 if __name__ == "__main__":

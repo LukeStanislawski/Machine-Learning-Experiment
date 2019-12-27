@@ -83,14 +83,23 @@ class MainNet(nn.Module):
         self.p = False
 
     def forward(self, x):
+        print(x.size())
         x = F.relu(self.conv1(x))
+        print(x.size())
         x = self.mPool(x)
+        print(x.size())
         x = F.relu(self.conv2(x))
+        print(x.size())
         x = self.mPool(x)
+        print(x.size())
         x = x.view(-1, 24 * 5 * 5)
+        print(x.size())
         x = F.relu(self.fc1(x))
+        print(x.size())
         x = F.relu(self.fc2(x))
+        print(x.size())
         x = self.fc3(x)
+        print(x.size())
         return x
 
 
@@ -118,11 +127,10 @@ class FCN2(nn.Module):
 class Conv1(nn.Module):
     def __init__(self):
         super(Conv1, self).__init__()
-        self.conv1 = nn.Conv2d(3, 6, 3)
-        self.fc1 = nn.Linear(6 * 28 * 28, 2048)
-        self.fc2 = nn.Linear(2048, 10)
-
-        self.p = False
+        self.conv1 = nn.Conv2d(3, 6, 5)
+        self.mPool = nn.MaxPool2d(2,1)
+        self.fc1 = nn.Linear(6 * 28 * 28, 3 * 28 * 28)
+        self.fc2 = nn.Linear(3 * 28 * 28, 10)
 
     def forward(self, x):
         x = self.conv1(x)
@@ -136,56 +144,155 @@ class Conv1(nn.Module):
 class Conv2(nn.Module):
     def __init__(self):
         super(Conv2, self).__init__()
-        self.conv1 = nn.Conv2d(3, 6, 3)
-        self.conv2 = nn.Conv2d(6, 12, 3)
-        self.fc1 = nn.Linear(12 * 28 * 28, 2048)
+        self.conv1 = nn.Conv2d(3, 6, 5)
+        self.conv2 = nn.Conv2d(6, 12, 5)
+        self.mPool = nn.MaxPool2d(2,1)
+        self.fc1 = nn.Linear(12 * 22 * 22, 2048)
         self.fc2 = nn.Linear(2048, 10)
-
-        self.p = False
 
     def forward(self, x):
         x = self.conv1(x)
+        x = self.mPool(x)
         x = self.conv2(x)
-        x = x.view(-1, 18 * 28 * 28)
+        x = self.mPool(x)
+        x = x.view(-1, 12 * 22 * 22)
         x = self.fc1(x)
         x = self.fc2(x)
         return x
-
-
 
 class Conv3(nn.Module):
     def __init__(self):
         super(Conv3, self).__init__()
-        self.conv1 = nn.Conv2d(3, 6, 3)
-        self.conv2 = nn.Conv2d(6, 12, 3)
-        self.conv3 = nn.Conv2d(12, 18, 3)
-        self.fc1 = nn.Linear(18 * 28 * 28, 2048)
+        self.conv1 = nn.Conv2d(3, 6, 5)
+        self.conv2 = nn.Conv2d(6, 12, 5)
+        self.conv3 = nn.Conv2d(12, 18, 5)
+        self.mPool = nn.MaxPool2d(2,1)
+        self.fc1 = nn.Linear(18 * 16 * 16, 2048)
+        self.fc2 = nn.Linear(2048, 10)
+
+    def forward(self, x):
+        x = self.conv1(x)
+        x = self.mPool(x)
+        x = self.mPool(x)
+        x = self.conv2(x)
+        x = self.mPool(x)
+        x = self.conv3(x)
+        x = self.mPool(x)
+        x = x.view(-1, 18 * 16 * 16)
+        x = self.fc1(x)
+        x = self.fc2(x)
+        return x
+
+
+
+class AvgPool(nn.Module):
+    def __init__(self):
+        super(AvgPool, self).__init__()
+        self.conv1 = nn.Conv2d(3, 6, 5)
+        self.conv2 = nn.Conv2d(6, 12, 5)
+        self.mPool = nn.AvgPool2d(2,1)
+        self.fc1 = nn.Linear(12 * 22 * 22, 2048)
         self.fc2 = nn.Linear(2048, 10)
 
         self.p = False
 
     def forward(self, x):
         x = self.conv1(x)
-        # print (x.size())
+        x = self.mPool(x)
         x = self.conv2(x)
-        # print (x.size())
-        x = self.conv3(x)
-        x = x.view(-1, 18 * 28 * 28)
+        x = self.mPool(x)
+        x = x.view(-1, 12 * 22 * 22)
         x = self.fc1(x)
         x = self.fc2(x)
         return x
 
 
-# Docs
-# ____
 
-# torch.nn.Conv2d(in_channels, out_channels, kernel_size, 
-#   stride=1, padding=0, dilation=1, groups=1, bias=True, padding_mode='zeros')
+class ReLU(nn.Module):
+    def __init__(self):
+        super(ReLU, self).__init__()
+        self.conv1 = nn.Conv2d(3, 6, 5)
+        self.conv2 = nn.Conv2d(6, 12, 5)
+        self.mPool = nn.MaxPool2d(2,1)
+        self.fc1 = nn.Linear(12 * 22 * 22, 2048)
+        self.fc2 = nn.Linear(2048, 10)
 
-# torch.nn.MaxPool2d(kernel_size, 
-#   stride=None, padding=0, dilation=1, return_indices=False, ceil_mode=False)
+    def forward(self, x):
+        x = F.relu(self.conv1(x))
+        x = self.mPool(x)
 
-# torch.nn.Linear(in_features, out_features, bias=True)
+        x = F.relu(self.conv2(x))
+        x = self.mPool(x)
+
+        x = x.view(-1, 12 * 22 * 22)
+        x = F.relu(self.fc1(x))     
+        x = self.fc2(x)
+        return x
 
 
-# print (x.size())
+
+class Sigmoid(nn.Module):
+    def __init__(self):
+        super(Sigmoid, self).__init__()
+        self.conv1 = nn.Conv2d(3, 6, 5)
+        self.conv2 = nn.Conv2d(6, 12, 5)
+        self.mPool = nn.MaxPool2d(2,1)
+        self.fc1 = nn.Linear(12 * 22 * 22, 2048)
+        self.fc2 = nn.Linear(2048, 10)
+
+    def forward(self, x):
+        x = F.sigmoid(self.conv1(x))
+        x = self.mPool(x)
+
+        x = F.sigmoid(self.conv2(x))
+        x = self.mPool(x)
+
+        x = x.view(-1, 12 * 22 * 22)
+        x = F.sigmoid(self.fc1(x))     
+        x = self.fc2(x)
+        return x
+
+
+class SoftMax(nn.Module):
+    def __init__(self):
+        super(SoftMax, self).__init__()
+        self.conv1 = nn.Conv2d(3, 6, 5)
+        self.conv2 = nn.Conv2d(6, 12, 5)
+        self.mPool = nn.MaxPool2d(2,1)
+        self.fc1 = nn.Linear(12 * 22 * 22, 2048)
+        self.fc2 = nn.Linear(2048, 10)
+
+    def forward(self, x):
+        x = F.softmax(self.conv1(x))
+        x = self.mPool(x)
+
+        x = F.softmax(self.conv2(x))
+        x = self.mPool(x)
+
+        x = x.view(-1, 12 * 22 * 22)
+        x = F.softmax(self.fc1(x))     
+        x = self.fc2(x)
+        return x
+
+
+
+class Tanh(nn.Module):
+    def __init__(self):
+        super(Tanh, self).__init__()
+        self.conv1 = nn.Conv2d(3, 6, 5)
+        self.conv2 = nn.Conv2d(6, 12, 5)
+        self.mPool = nn.MaxPool2d(2,1)
+        self.fc1 = nn.Linear(12 * 22 * 22, 2048)
+        self.fc2 = nn.Linear(2048, 10)
+
+    def forward(self, x):
+        x = F.tanh(self.conv1(x))
+        x = self.mPool(x)
+
+        x = F.tanh(self.conv2(x))
+        x = self.mPool(x)
+
+        x = x.view(-1, 12 * 22 * 22)
+        x = F.tanh(self.fc1(x))     
+        x = self.fc2(x)
+        return x

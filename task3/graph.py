@@ -22,17 +22,19 @@ def main(PATH):
 
 	plt.figure(figsize=(15,8))
 	# plt.suptitle("Runtime: {:.3f}, Train Set: {}, Test Set: {}".format(
-											# sum([x["run"]["runtime"] for x in results]),
+											# sum([x["runtime"] for x in results]),
 											# results[0]["param"]["n_train"],
 											# results[0]["param"]["n_test"]))
 	plt.subplots_adjust(bottom=0.08, top=0.9, left=0.08, right=0.95, wspace=0.2, hspace=0.4)
-	rows = 2
+	rows = 3
 	cols = 2
 
 
 	FCN_acc_v_hl(results)
-	FCN_acc_pc_v_hl(results)
 	FCN_ttrain_v_hl(results)
+	Conv_nc_v_acc(results)
+	Pool_Comparison(results)
+	Activation_Comparison(results)
 
 
 	plt.show()
@@ -52,23 +54,14 @@ def FCN_acc_v_hl(results, sp=True):
 	fcns = [x for x in results if x["params"]["model"] == "FCN"]
 	hl = [x["params"]["hidden_layers"] for x in fcns]
 	accs = [x["test"]["accuracy"] for x in fcns]
+	f1s = [np.mean(x["test"]["f1_pc"]) for x in fcns]
 	plot(hl, accs, 0)
 
-
-
-def FCN_acc_pc_v_hl(results, sp=True):
-	if sp: plt.subplot(rows,cols,get_gn())
-	plt.title('FCN Accuracy Per Class Against n Hidden Layers')
-	plt.ylabel('Accuracy')
-	plt.xlabel('n')
-
-	fcns = [x for x in results if x["params"]["model"] == "FCN"]
-	hl = [x["params"]["hidden_layers"] for x in fcns]
-	for ci in range(10):
-		accs = [x["test"]["accuracy_pc"][ci] for x in fcns]
-		plot(hl, accs, ci, label=get_label(ci))
-
-	plt.legend(loc="lower right")
+	if sp:
+		print("\nFCN Accuracy Against n Hidden Layers")
+		print(hl)
+		print(accs)
+		print(f1s)
 
 
 def FCN_ttrain_v_hl(results, sp=True):
@@ -82,6 +75,62 @@ def FCN_ttrain_v_hl(results, sp=True):
 	times = [x["train"]["runtime"] for x in fcns]
 	plot(hl, times, 0)
 
+
+def Conv_nc_v_acc(results, sp=True):
+	if sp: plt.subplot(rows,cols,get_gn())
+	plt.title('ConvX Accuracy Against n Convolution & Max Pooling Layers')
+	plt.ylabel('Accuracy')
+	plt.xlabel('n Convolution & Max Pooling Layers')
+
+	fcns = [x for x in results if x["params"]["model"] == "ConvX"]
+	cl = [x["params"]["id"] for x in fcns]
+	accs = [x["test"]["accuracy"] for x in fcns]
+	f1s = [np.mean(x["test"]["f1_pc"]) for x in fcns]
+	plot(cl, accs, 0)
+
+	if sp:
+		print("\nConvX Accuracy against N convolution layers")
+		print(cl)
+		print(accs)
+		print(f1s)
+
+
+def Pool_Comparison(results, sp=True):
+	if sp: plt.subplot(rows,cols,get_gn())
+	plt.title('ConvX Accuracy Against n Convolution & Max Pooling Layers')
+	plt.ylabel('Accuracy')
+	plt.xlabel('n Convolution & Max Pooling Layers')
+
+	pools = [x for x in results if x["params"]["tid"] == 3 or (x["params"]["tid"] == 2 and x["params"]["id"] == "Conv2")]
+	cl = [x["params"]["id"] for x in pools]
+	accs = [x["test"]["accuracy"] for x in pools]
+	f1s = [np.mean(x["test"]["f1_pc"]) for x in pools]
+	plt.bar(cl, accs)
+
+	if sp:
+		print("\nAccuracy of different pooling layers")
+		print(cl)
+		print(accs)
+		print(f1s)
+
+
+def Activation_Comparison(results, sp=True):
+	if sp: plt.subplot(rows,cols,get_gn())
+	plt.title('Activation Function accuracy')
+	plt.ylabel('Accuracy')
+	plt.xlabel('Activation Function')
+
+	pools = [x for x in results if x["params"]["tid"] == 4 or x["params"]["id"] == "Conv2"]
+	cl = [x["params"]["id"] for x in pools]
+	accs = [x["test"]["accuracy"] for x in pools]
+	f1s = [np.mean(x["test"]["f1_pc"]) for x in pools]
+	plt.bar(cl, accs)
+
+	if sp:
+		print("\nActibation function accuracy")
+		print(cl)
+		print(accs)
+		print(f1s)
 
 
 # Plotting helper functions
@@ -136,14 +185,14 @@ def save_plots(results):
 	plt.savefig(p.format("FCN_acc_v_hl"))
 	plt.clf()
 
-	FCN_acc_pc_v_hl(results, sp=False)
-	plt.tight_layout()
-	plt.savefig(p.format("FCN_acc_pc_v_hl"))
-	plt.clf()
-
 	FCN_ttrain_v_hl(results, sp=False)
 	plt.tight_layout()
 	plt.savefig(p.format("FCN_ttrain_v_hl"))
+	plt.clf()
+
+	Conv_nc_v_acc(results, sp=False)
+	plt.tight_layout()
+	plt.savefig(p.format("Conv_nc_v_acc"))
 	plt.clf()
 
 	print("Images saved")
