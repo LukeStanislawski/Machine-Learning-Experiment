@@ -48,7 +48,7 @@ class RunTest():
         startime = time.time()
 
         self.train()
-        # self.save(self.id)
+        self.save(self.id)
         # self.load(self.id)
         self.res["test"] = self.test()
 
@@ -64,7 +64,7 @@ class RunTest():
         for epoch in range(self.res["params"]["num_epochs"]):
             running_loss = 0.0
             data = iter(self.trainloader)
-            for i in range(self.res["params"]["n_train"]):
+            for i in range(int(self.res["params"]["n_train"] / self.res["params"]["data"]["batch_size"])):
                 # get the inputs; data is a list of [inputs, labels]
                 inputs, labels = data.next()
 
@@ -95,7 +95,7 @@ class RunTest():
         y_pred = []
         data = iter(self.testloader)
         with torch.no_grad():
-            for i in range(self.res["params"]["n_test"]):
+            for i in range(int(self.res["params"]["n_test"] / self.res["params"]["data"]["batch_size"])):
                 images, labels = data.next()
                 y_test.extend(labels.tolist())
                 outputs = self.net(images)
@@ -139,7 +139,7 @@ def main():
     trainset, trainloader, testset, testloader, data_info = load_data()
 
     params = {}
-    params["n_train"] = 10000
+    params["n_train"] = 6000
     params["n_test"] = 3000
     params["lr"] = 0.001
     params["momentum"] = 0.9
@@ -156,25 +156,25 @@ def main():
 
     params["model"] = "ConvX"
     params["tid"] = 2
-    RunTest(Conv1(), params, trainloader, testloader, id="Conv1")
-    RunTest(Conv2(), params, trainloader, testloader, id="Conv2")
-    RunTest(Conv3(), params, trainloader, testloader, id="Conv3")
+    # RunTest(Conv1(), params, trainloader, testloader, id="Conv1")
+    # RunTest(Conv2(), params, trainloader, testloader, id="Conv2")
+    # RunTest(Conv3(), params, trainloader, testloader, id="Conv3")
 
 
     params["tid"] = 3
     params["model"] = "AvgPool"
-    RunTest(AvgPool(), params, trainloader, testloader, id="AvgPool")
+    # RunTest(AvgPool(), params, trainloader, testloader, id="AvgPool")
 
 
     params["tid"] = 4
-    params["model"] = "ReLU"
-    RunTest(ReLU(), params, trainloader, testloader, id="ReLU")
-    params["model"] = "Sigmoid"
-    RunTest(Sigmoid(), params, trainloader, testloader, id="Sigmoid")
-    params["model"] = "SoftMax"
-    RunTest(SoftMax(), params, trainloader, testloader, id="SoftMax")
-    params["model"] = "Tanh"
-    RunTest(SoftMax(), params, trainloader, testloader, id="Tanh")
+    # params["model"] = "ReLU"
+    # RunTest(ReLU(), params, trainloader, testloader, id="ReLU")
+    # params["model"] = "Sigmoid"
+    # RunTest(Sigmoid(), params, trainloader, testloader, id="Sigmoid")
+    # params["model"] = "SoftMax"
+    # RunTest(SoftMax(), params, trainloader, testloader, id="SoftMax")
+    # params["model"] = "Tanh"
+    # RunTest(SoftMax(), params, trainloader, testloader, id="Tanh")
 
 
     params["tid"] = 5

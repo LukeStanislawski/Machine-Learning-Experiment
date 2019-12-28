@@ -25,6 +25,7 @@ def load_data():
 	info["n_train"] = len(trainset)
 	info["n_test"] = len(testset)
 	info["classes"] = get_classes()
+	info["batch_size"] = 4
 
 	return trainset, trainloader, testset, testloader, info
 
