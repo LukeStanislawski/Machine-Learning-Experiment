@@ -56,6 +56,19 @@ def get_logger(path):
 	return log
 
 
+def silence_warnings():
+    def warn(*args, **kwargs):
+    	pass
+    import warnings
+    warnings.warn = warn
+
+
+# Format time float to string
+def ft(seconds):
+	m, s = divmod(seconds, 60)
+	h, m = divmod(m, 60)
+	return "{:.0f}:{:.0f}:{:.0f}".format(h, m, s)
+
 # get some random training images
 # dataiter = iter(trainloader)
 # images, labels = dataiter.next()

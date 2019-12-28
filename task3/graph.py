@@ -2,7 +2,7 @@ import sys, os, json
 sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 import matplotlib.pyplot as plt
 import numpy as np
-from utils import get_classes, get_label
+from utils import get_classes, get_label, ft
 
 rows = None
 cols = None
@@ -21,20 +21,25 @@ def main(PATH):
 
 
 	plt.figure(figsize=(15,8))
-	# plt.suptitle("Runtime: {:.3f}, Train Set: {}, Test Set: {}".format(
-											# sum([x["runtime"] for x in results]),
-											# results[0]["param"]["n_train"],
-											# results[0]["param"]["n_test"]))
+	plt.suptitle("X_Train: {}, X_Train: {}, Tests Run: {}, Runtime: {}, Max: {}, Min: {}".format(
+				results[0]["params"]["n_train"],
+				results[0]["params"]["n_test"],
+				len(results),
+				ft(sum([x["runtime"] if "runtime" in x else 0.0 for x in results])),
+				ft(max([x["runtime"] if "runtime" in x else 0.0 for x in results])),
+				ft(min([x["runtime"] if "runtime" in x else 0.0 for x in results]))))
 	plt.subplots_adjust(bottom=0.08, top=0.9, left=0.08, right=0.95, wspace=0.2, hspace=0.4)
 	rows = 3
-	cols = 2
+	cols = 3
 
 
 	FCN_acc_v_hl(results)
 	FCN_ttrain_v_hl(results)
 	Conv_nc_v_acc(results)
 	Pool_Comparison(results)
-	Activation_Comparison(results)
+	Activation_Comparison_acc(results)
+	Activation_Comparison_f1(results)
+	channel_acc(results)
 
 
 	plt.show()
@@ -114,7 +119,7 @@ def Pool_Comparison(results, sp=True):
 		print(f1s)
 
 
-def Activation_Comparison(results, sp=True):
+def Activation_Comparison_acc(results, sp=True):
 	if sp: plt.subplot(rows,cols,get_gn())
 	plt.title('Activation Function accuracy')
 	plt.ylabel('Accuracy')
@@ -122,12 +127,44 @@ def Activation_Comparison(results, sp=True):
 
 	pools = [x for x in results if x["params"]["tid"] == 4 or x["params"]["id"] == "Conv2"]
 	cl = [x["params"]["id"] for x in pools]
-	accs = [x["test"]["accuracy"] for x in pools]
-	f1s = [np.mean(x["test"]["f1_pc"]) for x in pools]
+	accs = [round(x["test"]["accuracy"], 3) for x in pools]
+	f1s = [round(np.mean(x["test"]["f1_pc"]), 3) for x in pools]
 	plt.bar(cl, accs)
 
 	if sp:
-		print("\nActibation function accuracy")
+		print("\nActivation function accuracy")
+		print(cl)
+		print(accs)
+		print(f1s)
+
+
+def Activation_Comparison_f1(results, sp=True):
+	if sp: plt.subplot(rows,cols,get_gn())
+	plt.title('Activation Function F1')
+	plt.ylabel('F1')
+	plt.xlabel('Activation Function')
+
+	pools = [x for x in results if x["params"]["tid"] == 4 or x["params"]["id"] == "Conv2"]
+	cl = [x["params"]["id"] for x in pools]
+	f1s = [round(np.mean(x["test"]["f1_pc"]), 3) for x in pools]
+	plt.bar(cl, f1s)
+
+
+
+def channel_acc(results, sp=True):
+	if sp: plt.subplot(rows,cols,get_gn())
+	plt.title('Accuracy of different number of channels')
+	plt.ylabel('Accuracy')
+	plt.xlabel('Number of channels')
+
+	res = [x for x in results if x["params"]["tid"] == 5 or (x["params"]["tid"] == 4 and x["params"]["model"] == "ReLU")]
+	cl = [x["params"]["id"] for x in res]
+	accs = [round(x["test"]["accuracy"], 3) for x in res]
+	f1s = [round(np.mean(x["test"]["f1_pc"]), 3) for x in res]
+	plt.bar(cl, accs)
+
+	if sp:
+		print("\nActivation function accuracy")
 		print(cl)
 		print(accs)
 		print(f1s)
@@ -194,6 +231,22 @@ def save_plots(results):
 	plt.tight_layout()
 	plt.savefig(p.format("Conv_nc_v_acc"))
 	plt.clf()
+
+	Activation_Comparison_acc(results, sp=False)
+	plt.tight_layout()
+	plt.savefig(p.format("Activation_Comparison_acc"))
+	plt.clf()
+
+	Activation_Comparison_f1(results, sp=False)
+	plt.tight_layout()
+	plt.savefig(p.format("Activation_Comparison_f1"))
+	plt.clf()
+
+	channel_acc(results, sp=False)
+	plt.tight_layout()
+	plt.savefig(p.format("channel_acc"))
+	plt.clf()
+
 
 	print("Images saved")
 

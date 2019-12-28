@@ -7,7 +7,7 @@ from sklearn.model_selection import cross_val_score, KFold
 from sklearn.model_selection import ShuffleSplit
 from sklearn.metrics import f1_score, accuracy_score, precision_score, recall_score
 from scipy import stats
-from utils import get_logger
+from utils import get_logger, silence_warnings
 
 log = get_logger(os.path.join(os.path.dirname(os.path.abspath(__file__)), 'task2.log'))
 
@@ -193,11 +193,6 @@ def load_data():
 
     return X_full, y_full
 
-
-def silence_warnings():
-    def warn(*args, **kwargs): pass
-    import warnings
-    warnings.warn = warn
 
 
 def main():

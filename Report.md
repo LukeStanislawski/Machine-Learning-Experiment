@@ -10,9 +10,6 @@ I used a dataset of X image for all models involved in task 2 as this took an av
 
 ### Principle Component Analysis
 
-A | B
-
-
 ![f1_pc_v_dimensionality](task2/figs/acc_v_pca.png)
 
 ![f1_pc_v_dimensionality](task2/figs/f1_pc_v_dimensionality.png)
@@ -23,13 +20,13 @@ Above are the results of the overall accuracy of a Linear SVM when run against d
 
 ![poly_c_v_acc](task2/figs/poly_c_v_acc.png)
 
-From the chart above we can see that the more optimal combination of degree and C value tested is 3 and X. When degree=2, the decision boundary is not flexible enough to allow for the classification of as many images as when the degree is 3. When the degree is 4, the decision surface is overfitting to the values in the test data.
+From the chart above we can see that the more optimal combination of degree and C value tested is 2 and 0. When degree=2, the decision boundary is not flexible enough to allow for the classification of as many images as when the degree is 3. When the degree is 4, the decision surface is overfitting to the values in the test data.
 
 ![poly_c_v_f1](task2/figs/poly_c_v_f1.png)
 
 ![ploy_degree_v_acc](task2/figs/poly_degree_v_acc.png)
 
-The graph above shows accuracy results of a changing polynomial kernel degree. The curve peaks at a polynomial value of 2, after which the accuracy begins to drop. This is likely because the kernel function is to From degree 0 (linear) to degree 2, the kernel is making appropriate generalisations of the data.
+The graph above shows accuracy results of a changing polynomial kernel degree. The curve peaks at a polynomial value of 2, after which the accuracy begins to drop. At a degree of 3, the SVM is slightly overfitting as the test accuracy drops while the CV accuracy remains the same. From degree 0 (linear) to degree 2, the kernel is making appropriate generalisations of the data.
 
 ### RBF Kernel SVM
 
@@ -94,15 +91,27 @@ This is often the case as MaxPool favours the most significant features detected
 
 ### Activation Functions
 
-I decided to try the following activation functions:
+I decided on these 4 functions to test as Sigmoid and Tanh both normalise values output of the convolutional layers, and ReLU and softMax do not. Therefore I should be able to see which type is better for my model.
 
-| Activation Function | Accuracy | F1   |
-| ------------------- | -------- | ---- |
-| None                | 0.4702   |      |
-| ReLU                | 0.5863   |      |
-| Sigmoid             | 0.1924   |      |
-| SoftMax             | 0.1000   |      |
-| Tanh                | 0.1000   |      |
+| Activation Function | Accuracy | F1    |
+| ------------------- | -------- | ----- |
+| None                | 0.4702   | 0.471 |
+| ReLU                | 0.5863   | 0.583 |
+| Sigmoid             | 0.1924   | 0.092 |
+| SoftMax             | 0.1000   | 0.018 |
+| Tanh                | 0.1000   | 0.018 |
+
+![Activation_Comparison_acc](task3/figs/Activation_Comparison_acc.png)
+
+We can see that ReLU is performing the best so we will use this. The model its current state must therefore benefit from retaining more memory with each layer as opposed to normalisation.
+
+### Channels
+
+Next I have decided to trial varying the numbers of output channels of each convolutional layer.
+
+### Learning Rate
+
+### Epochs
 
 
 
