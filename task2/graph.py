@@ -2,7 +2,7 @@ import sys, os, json
 sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 import matplotlib.pyplot as plt
 import numpy as np
-from utils import get_classes, get_label
+from utils import get_classes, get_label, ft
 
 rows = None
 cols = None
@@ -21,12 +21,19 @@ def main(PATH):
 
 
 	plt.figure(figsize=(15,8))
-	plt.suptitle("Runtime: {:.3f}, Train Set: {}, Test Set: {}".format(
-											sum([x["run"]["runtime"] for x in results]),
-											results[0]["param"]["n_train"],
-											results[0]["param"]["n_test"]))
+	# plt.suptitle("Runtime: {:.3f}, Train Set: {}, Test Set: {}".format(
+	# 										sum([x["run"]["runtime"] for x in results]),
+	# 										results[0]["param"]["n_train"],
+	# 										results[0]["param"]["n_test"]))
+	plt.suptitle("X_Train: {}, X_Train: {}, Tests Run: {}, Runtime: {}, Max: {}, Min: {}".format(
+				results[0]["param"]["n_train"],
+				results[0]["param"]["n_test"],
+				len(results),
+				ft(sum([x["run"]["runtime"] for x in results])),
+				ft(max([x["run"]["runtime"] for x in results])),
+				ft(min([x["run"]["runtime"] for x in results]))))
 	plt.subplots_adjust(bottom=0.08, top=0.9, left=0.08, right=0.95, wspace=0.2, hspace=0.4)
-	rows = 3
+	rows = 4
 	cols = 3
 
 	#--- Task 2.1 - 2.2 ---
@@ -36,14 +43,16 @@ def main(PATH):
 	#--- Task 2.3 - 2.4 ---
 	poly_c_v_acc(results)
 	poly_c_v_f1(results)
-	rbf_c_v_acc(results)
-	rbf_c_v_f1(results)
 	poly_degree_v_acc(results)
 	poly_degree_v_f1(results)
+	rbf_c_v_acc(results)
+	rbf_c_v_f1(results)
+	rbf_gamma_v_acc(results)
+	rbf_gamma_v_f1(results)
 
 
 	plt.show()
-	# save_plots(results)	# For rendering in Markdown
+	save_plots(results)	# For rendering in Markdown
 
 
 
@@ -234,6 +243,50 @@ def f1_pc_v_dimensionality(results, sp=True):
 
 
 
+def rbf_gamma_v_acc(results, sp=True):
+	# rbf: C vs accuracy
+	if sp: plt.subplot(rows,cols,get_gn())
+	plt.title('RBF Kernel Accuracy Against Gamma Value')
+	plt.ylabel('Accuracy')
+	plt.xlabel('log(gamma)')
+
+	k_rbf = [x for x in results if str(x["param"]["ID"]).startswith("RBFvgamma")]
+	k_rbf = sorted(k_rbf, key = lambda i: i["param"]['gamma'])
+	Cs = [np.log10(x["param"]["gamma"]) for x in k_rbf]
+	
+	t_accs = [x["test"]["accuracy"] for x in k_rbf]
+	plot(Cs, t_accs, 0, label="Test")
+	cv_accs = [x["run"]["cv_accuracy"] for x in k_rbf]
+	plot(Cs, cv_accs, 1, label="CV")
+	plt.legend(loc="lower right")
+	# plt.ylim(0.05, 0.3)
+
+
+
+def rbf_gamma_v_f1(results, sp=True):
+	# rbf: C vs f1
+	if sp: plt.subplot(rows,cols,get_gn())
+	plt.title('RBF Kernel F1 Score Against Gamma Value')
+	plt.ylabel('F1')
+	plt.xlabel('log(gamma)')
+
+	k_rbf = [x for x in results if str(x["param"]["ID"]).startswith("RBFvgamma")]
+	k_rbf = sorted(k_rbf, key = lambda i: i["param"]['gamma'])
+	Cs = [np.log10(x["param"]["gamma"]) for x in k_rbf]
+
+	for ci, c in enumerate(get_classes()):
+		f1s = [x["test"]["f1_pc"][ci] for x in k_rbf]
+		plt.plot(Cs, f1s, get_lc(3))
+		plot(Cs, f1s, i=ci, label=get_label(ci))
+	
+	
+	plt.legend(loc="lower right")
+	# f1s = [x["run"]["cv_f1"] for x in k_rbf]
+	# plt.ylim(0.05, 0.3)
+
+
+
+
 # Plotting helper functions
 # -------------------------
 
@@ -316,6 +369,14 @@ def save_plots(results):
 	plt.clf()
 	poly_degree_v_f1(results, sp=False)
 	plt.savefig(p.format("poly_degree_v_f1"))
+
+	plt.clf()
+	rbf_gamma_v_acc(results, sp=False)
+	plt.savefig(p.format("rbf_gamma_v_acc"))
+
+	plt.clf()
+	rbf_gamma_v_f1(results, sp=False)
+	plt.savefig(p.format("rbf_gamma_v_f1"))
 
 	print("Images saved")
 

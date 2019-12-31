@@ -40,6 +40,7 @@ def main(PATH):
 	Activation_Comparison_acc(results)
 	Activation_Comparison_f1(results)
 	channel_acc(results)
+	epoch_acc(results)
 
 
 	plt.show()
@@ -60,6 +61,7 @@ def FCN_acc_v_hl(results, sp=True):
 	hl = [x["params"]["hidden_layers"] for x in fcns]
 	accs = [x["test"]["accuracy"] for x in fcns]
 	f1s = [np.mean(x["test"]["f1_pc"]) for x in fcns]
+	rts = [ft(x["runtime"]) for x in fcns]
 	plot(hl, accs, 0)
 
 	if sp:
@@ -67,6 +69,7 @@ def FCN_acc_v_hl(results, sp=True):
 		print(hl)
 		print(accs)
 		print(f1s)
+		print(" ".join(rts))
 
 
 def FCN_ttrain_v_hl(results, sp=True):
@@ -91,6 +94,7 @@ def Conv_nc_v_acc(results, sp=True):
 	cl = [x["params"]["id"] for x in fcns]
 	accs = [x["test"]["accuracy"] for x in fcns]
 	f1s = [np.mean(x["test"]["f1_pc"]) for x in fcns]
+	rts = [ft(x["runtime"]) for x in fcns]
 	plot(cl, accs, 0)
 
 	if sp:
@@ -98,6 +102,7 @@ def Conv_nc_v_acc(results, sp=True):
 		print(cl)
 		print(accs)
 		print(f1s)
+		print(" ".join(rts))
 
 
 def Pool_Comparison(results, sp=True):
@@ -110,6 +115,7 @@ def Pool_Comparison(results, sp=True):
 	cl = [x["params"]["id"] for x in pools]
 	accs = [x["test"]["accuracy"] for x in pools]
 	f1s = [np.mean(x["test"]["f1_pc"]) for x in pools]
+	rts = [ft(x["runtime"]) for x in pools]
 	plt.bar(cl, accs)
 
 	if sp:
@@ -117,6 +123,7 @@ def Pool_Comparison(results, sp=True):
 		print(cl)
 		print(accs)
 		print(f1s)
+		print(" ".join(rts))
 
 
 def Activation_Comparison_acc(results, sp=True):
@@ -129,6 +136,7 @@ def Activation_Comparison_acc(results, sp=True):
 	cl = [x["params"]["id"] for x in pools]
 	accs = [round(x["test"]["accuracy"], 3) for x in pools]
 	f1s = [round(np.mean(x["test"]["f1_pc"]), 3) for x in pools]
+	rts = [ft(x["runtime"]) for x in pools]
 	plt.bar(cl, accs)
 
 	if sp:
@@ -136,6 +144,7 @@ def Activation_Comparison_acc(results, sp=True):
 		print(cl)
 		print(accs)
 		print(f1s)
+		print(" ".join(rts))
 
 
 def Activation_Comparison_f1(results, sp=True):
@@ -161,6 +170,7 @@ def channel_acc(results, sp=True):
 	cl = [x["params"]["id"] for x in res]
 	accs = [round(x["test"]["accuracy"], 3) for x in res]
 	f1s = [round(np.mean(x["test"]["f1_pc"]), 3) for x in res]
+	rts = [ft(x["runtime"]) for x in res]
 	plt.bar(cl, accs)
 
 	if sp:
@@ -168,6 +178,27 @@ def channel_acc(results, sp=True):
 		print(cl)
 		print(accs)
 		print(f1s)
+		print(" ".join(rts))
+
+
+def epoch_acc(results, sp=True):
+	if sp: plt.subplot(rows,cols,get_gn())
+	plt.title('Accuracy and F1 Score of Model Against Number of Epochs')
+	plt.ylabel('Accuracy')
+	plt.xlabel('Number of Epochs')
+	res = [x for x in results if x["params"]["tid"] == 6][-1]
+	epochs = range(1, len(res["train"]["epochs"]) +1)
+	accs = [x["accuracy"] for x in res["train"]["epochs"]]
+	f1s = [x["f1"] for x in res["train"]["epochs"]]
+	plot(epochs, accs, i=4, label="Accuracy")
+	plot(epochs, f1s, i=5, label="F1 Score")
+	plt.legend(loc="lower right")
+	if sp:
+		print("\nEpoch accuracy")
+		print(epochs)
+		print(accs)
+		print(f1s)
+
 
 
 # Plotting helper functions
@@ -245,6 +276,11 @@ def save_plots(results):
 	channel_acc(results, sp=False)
 	plt.tight_layout()
 	plt.savefig(p.format("channel_acc"))
+	plt.clf()
+
+	epoch_acc(results, sp=False)
+	plt.tight_layout()
+	plt.savefig(p.format("epoch_acc"))
 	plt.clf()
 
 

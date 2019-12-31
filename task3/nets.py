@@ -263,6 +263,28 @@ class Tanh(nn.Module):
         return x
 
 
+class ReLU6(nn.Module):
+    def __init__(self):
+        super(ReLU6, self).__init__()
+        self.conv1 = nn.Conv2d(3, 8, 5)
+        self.conv2 = nn.Conv2d(8, 24, 5)
+        self.mPool = nn.MaxPool2d(2,1)
+        self.fc1 = nn.Linear(24 * 22 * 22, 2048)
+        self.fc2 = nn.Linear(2048, 10)
+
+    def forward(self, x):
+        x = F.relu6(self.conv1(x))
+        x = self.mPool(x)
+
+        x = F.relu6(self.conv2(x))
+        x = self.mPool(x)
+
+        x = x.view(-1, 24 * 22 * 22)
+        x = F.relu6(self.fc1(x))     
+        x = self.fc2(x)
+        return x
+
+
 class Channel(nn.Module):
     def __init__(self, chan2, chan3):
         super(Channel, self).__init__()
@@ -274,11 +296,32 @@ class Channel(nn.Module):
         self.fc2 = nn.Linear(2048, 10)
 
     def forward(self, x):
-        x = F.relu(self.conv1(x))
+        x = F.relu6(self.conv1(x))
         x = self.mPool(x)
-        x = F.relu(self.conv2(x))
+        x = F.relu6(self.conv2(x))
         x = self.mPool(x)
         x = x.view(-1, self.chan3 * 22 * 22)
-        x = F.relu(self.fc1(x))     
+        x = F.relu6(self.fc1(x))     
+        x = self.fc2(x)
+        return x
+
+
+
+class HyperParams(nn.Module):
+    def __init__(self):
+        super(HyperParams, self).__init__()
+        self.conv1 = nn.Conv2d(3, 10, 5)
+        self.conv2 = nn.Conv2d(10, 20, 5)
+        self.mPool = nn.MaxPool2d(2,1)
+        self.fc1 = nn.Linear(20 * 22 * 22, 2048)
+        self.fc2 = nn.Linear(2048, 10)
+
+    def forward(self, x):
+        x = F.relu6(self.conv1(x))
+        x = self.mPool(x)
+        x = F.relu6(self.conv2(x))
+        x = self.mPool(x)
+        x = x.view(-1, 20 * 22 * 22)
+        x = F.relu6(self.fc1(x))     
         x = self.fc2(x)
         return x

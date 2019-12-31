@@ -9,8 +9,7 @@ import matplotlib.pyplot as plt
 
 def load_data():
 	transform = transforms.Compose(
-    [transforms.ToTensor(),
-     transforms.Normalize((0.5, 0.5, 0.5), (0.5, 0.5, 0.5))])
+	    [transforms.ToTensor(), transforms.Normalize((0.5, 0.5, 0.5), (0.5, 0.5, 0.5))])
 
 	trainset = torchvision.datasets.CIFAR10(root='../', train=True,
 	                                        download=True, transform=transform)
@@ -20,7 +19,7 @@ def load_data():
 	testset = torchvision.datasets.CIFAR10(root='../', train=False,
 	                                       download=True, transform=transform)
 	testloader = torch.utils.data.DataLoader(testset, batch_size=4,
-	                                         shuffle=False, num_workers=2)
+	                                         shuffle=True, num_workers=2)
 	info = {}
 	info["n_train"] = len(trainset)
 	info["n_test"] = len(testset)
@@ -70,11 +69,9 @@ def ft(seconds):
 	h, m = divmod(m, 60)
 	return "{:.0f}:{:.0f}:{:.0f}".format(h, m, s)
 
-# get some random training images
-# dataiter = iter(trainloader)
-# images, labels = dataiter.next()
 
-# # show images
-# imshow(torchvision.utils.make_grid(images))
-# # print labels
-# print(' '.join('%5s' % classes[labels[j]] for j in range(4)))
+# def display_img(img):
+#     img2 = [[img[x], img[1024+x], img[2048+x]] for x in range(int(len(img)/3))]  
+#     img3 = [img2[x*32:(x+1)*32] for x in range(32)]
+#     plt.imshow(img3)
+#     plt.show()
