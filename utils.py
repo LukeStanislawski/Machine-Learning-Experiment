@@ -1,4 +1,4 @@
-import sys, os, logging
+import sys, os, logging, json
 import torch
 import torchvision
 import torchvision.transforms as transforms
@@ -70,8 +70,23 @@ def ft(seconds):
 	return "{:.0f}:{:.0f}:{:.0f}".format(h, m, s)
 
 
-# def display_img(img):
-#     img2 = [[img[x], img[1024+x], img[2048+x]] for x in range(int(len(img)/3))]  
-#     img3 = [img2[x*32:(x+1)*32] for x in range(32)]
-#     plt.imshow(img3)
-#     plt.show()
+def load_results(FILE):
+	if len(sys.argv) > 1:
+		f_path = str(sys.argv[1])
+	else:
+		f_path = os.path.join(os.path.dirname(FILE), 'results.csv')
+
+	results = []
+	with open(f_path) as f:
+		lines = f.readlines()
+	for li, line in enumerate(lines):
+		results.append(json.loads(line))
+
+	return results
+
+
+def display_img(img):
+    img2 = [[img[x], img[1024+x], img[2048+x]] for x in range(int(len(img)/3))]  
+    img3 = [img2[x*32:(x+1)*32] for x in range(32)]
+    plt.imshow(img3)
+    plt.show()

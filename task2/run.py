@@ -216,7 +216,7 @@ def load_data():
 
 def main():
     print("Loading data")
-    n_train = 6000
+    n_train = 4000
     n_test = 1000
     X_full, y_full = load_data()
     X_small = X_full[:n_train]

@@ -2,10 +2,6 @@ import torch.nn as nn
 import torch.nn.functional as F
 # from torch.nn import Parameter as P
 
-def get_nets():
-    return [Net(), FCN()]
-
-
 class Net(nn.Module):
     def __init__(self):
         super(Net, self).__init__()
@@ -125,6 +121,7 @@ class Conv2(nn.Module):
         x = self.fc2(x)
         return x
 
+
 class Conv3(nn.Module):
     def __init__(self):
         super(Conv3, self).__init__()
@@ -149,7 +146,6 @@ class Conv3(nn.Module):
         return x
 
 
-
 class AvgPool(nn.Module):
     def __init__(self):
         super(AvgPool, self).__init__()
@@ -158,8 +154,6 @@ class AvgPool(nn.Module):
         self.mPool = nn.AvgPool2d(2,1)
         self.fc1 = nn.Linear(24 * 22 * 22, 2048)
         self.fc2 = nn.Linear(2048, 10)
-
-        self.p = False
 
     def forward(self, x):
         x = self.conv1(x)
@@ -170,7 +164,6 @@ class AvgPool(nn.Module):
         x = self.fc1(x)
         x = self.fc2(x)
         return x
-
 
 
 class ReLU(nn.Module):
@@ -193,7 +186,6 @@ class ReLU(nn.Module):
         x = F.relu(self.fc1(x))     
         x = self.fc2(x)
         return x
-
 
 
 class Sigmoid(nn.Module):
@@ -238,7 +230,6 @@ class SoftMax(nn.Module):
         x = F.softmax(self.fc1(x))     
         x = self.fc2(x)
         return x
-
 
 
 class Tanh(nn.Module):
@@ -304,7 +295,6 @@ class Channel(nn.Module):
         x = F.relu6(self.fc1(x))     
         x = self.fc2(x)
         return x
-
 
 
 class HyperParams(nn.Module):

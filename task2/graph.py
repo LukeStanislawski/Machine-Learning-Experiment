@@ -2,29 +2,17 @@ import sys, os, json
 sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 import matplotlib.pyplot as plt
 import numpy as np
-from utils import get_classes, get_label, ft
+from utils import get_classes, get_label, ft, load_results
 
 rows = None
 cols = None
 gn = 0
 
 
-def main(PATH):
-	global rows
-	global cols
-	
-	results = []
-	with open(PATH) as f:
-		lines = f.readlines()
-	for li, line in enumerate(lines):
-		results.append(json.loads(line))
-
+def main():
+	results = load_results(os.path.abspath(__file__))
 
 	plt.figure(figsize=(15,8))
-	# plt.suptitle("Runtime: {:.3f}, Train Set: {}, Test Set: {}".format(
-	# 										sum([x["run"]["runtime"] for x in results]),
-	# 										results[0]["param"]["n_train"],
-	# 										results[0]["param"]["n_test"]))
 	plt.suptitle("X_Train: {}, X_Train: {}, Tests Run: {}, Runtime: {}, Max: {}, Min: {}".format(
 				results[0]["param"]["n_train"],
 				results[0]["param"]["n_test"],
@@ -33,14 +21,19 @@ def main(PATH):
 				ft(max([x["run"]["runtime"] for x in results])),
 				ft(min([x["run"]["runtime"] for x in results]))))
 	plt.subplots_adjust(bottom=0.08, top=0.9, left=0.08, right=0.95, wspace=0.2, hspace=0.4)
+	
+	# Rows and cols to display
+	# Note: All graphs are written to file when save_plots() is called
+	# regardless of whether they are called here in main()
+	global rows
+	global cols
 	rows = 4
 	cols = 3
 
-	#--- Task 2.1 - 2.2 ---
+	# Comment out any graphs you wish to not display and adjust vals of rows & cols
 	acc_v_pca(results)
 	f1_pc_v_dimensionality(results)
-	# f1_v_pca(results)
-	#--- Task 2.3 - 2.4 ---
+	f1_v_pca(results)
 	poly_c_v_acc(results)
 	poly_c_v_f1(results)
 	poly_degree_v_acc(results)
@@ -50,9 +43,11 @@ def main(PATH):
 	rbf_gamma_v_acc(results)
 	rbf_gamma_v_f1(results)
 
-
+	# Displayes graphs on screen
 	plt.show()
-	save_plots(results)	# For rendering in Markdown
+
+	# Saves graphs to file for rendering in report
+	# save_plots(results)
 
 
 
@@ -67,7 +62,7 @@ def f1_v_pca(results, sp=True):
 	lin_f1 = [x["run"]["cv_f1"] for x in k_linear]
 
 	if sp: plt.subplot(rows,cols,get_gn())
-	plt.title('Linear Kernel F1 Score Against PCA Dimentionality')
+	plt.title('Linear Kernel: F1 Score Against PCA Dimentionality')
 	plt.ylabel('F1 Score')
 	plt.xlabel('Proportion of Original Dimentionality')
 	plt.plot(lin_pcas, lin_f1, get_lc(0))
@@ -75,7 +70,7 @@ def f1_v_pca(results, sp=True):
 
 def acc_v_pca(results, sp=True):
 	if sp: plt.subplot(rows,cols,get_gn())
-	plt.title('Linear Kernel Accuracy Against PCA Dimentionality')
+	plt.title('Linear Kernel: Accuracy Against PCA Dimentionality')
 	plt.ylabel('Accuracy')
 	plt.xlabel('Proportion of Original Dimentionality')
 
@@ -95,7 +90,7 @@ def acc_v_pca(results, sp=True):
 def poly_c_v_acc(results, sp=True):
 	# poly: C vs accuracy
 	if sp: plt.subplot(rows,cols,get_gn())
-	plt.title('Accuracy of Polynomial Kernel against C Value')
+	plt.title('Polynomial Kernel: Accuracy Against C Value')
 	plt.ylabel('Accuracy')
 	plt.xlabel('log(C)')
 
@@ -110,28 +105,23 @@ def poly_c_v_acc(results, sp=True):
 			plt.plot(poly_vs_C_C, poly_vs_C_acc, get_lc(degree), label="Degree={}".format(degree))
 
 	plt.legend(loc="lower right")
-	# plt.ylim(0.05, 0.3)
 
 
 def poly_c_v_f1(results, sp=True):
 	# poly: C vs f1
-	degree = 3
 	if sp: plt.subplot(rows,cols,get_gn())
-
-	k_poly = [x for x in results if str(x["param"]["ID"]).startswith("PvC") and x["param"]["degree"] == degree]
+	k_poly = [x for x in results if str(x["param"]["ID"]).startswith("PvC") and x["param"]["degree"] == 3]
 	k_poly = sorted(k_poly, key = lambda i: i["param"]['C'])
 	log_C = [np.log10(x["param"]["C"]) for x in k_poly]
 
-	# scores = []
 	for ci, c in enumerate(get_classes()):
 		f1s = [x["test"]["f1_pc"][ci] for x in k_poly]
 		plot(log_C, f1s, ci, label="{}".format(get_label(ci)))
 
-	plt.title('Polynomial Kernel F1 Score Against C Value')
+	plt.title('Polynomial Kernel: F1 Score Against C Value')
 	plt.ylabel('F1')
 	plt.xlabel('log(C)')
 	plt.legend(loc="lower right")
-	# plt.ylim(0.05, 0.3)
 
 
 def rbf_c_v_acc(results, sp=True):
@@ -146,11 +136,15 @@ def rbf_c_v_acc(results, sp=True):
 	Cs = [np.log10(x["param"]["C"]) for x in k_rbf]
 	
 	t_accs = [x["test"]["accuracy"] for x in k_rbf]
-	plot(Cs, t_accs, 0, label="Test")
+	plot(Cs, t_accs, 0, label="Test Accuracy")
 	cv_accs = [x["run"]["cv_accuracy"] for x in k_rbf]
-	plot(Cs, cv_accs, 1, label="CV")
+	plot(Cs, cv_accs, 1, label="CV Accuracy")
+	t_f1s = [x["test"]["f1"] for x in k_rbf]
+	plot(Cs, t_f1s, 2, label="Test F1")
+	cv_f1s = [x["run"]["cv_f1"] for x in k_rbf]
+	plot(Cs, cv_f1s, 3, label="CV F1")
+
 	plt.legend(loc="lower right")
-	# plt.ylim(0.05, 0.3)
 
 
 def rbf_c_v_f1(results, sp=True):
@@ -171,16 +165,13 @@ def rbf_c_v_f1(results, sp=True):
 	
 	
 	plt.legend(loc="lower right")
-	# f1s = [x["run"]["cv_f1"] for x in k_rbf]
-	# plt.ylim(0.05, 0.3)
 
 
 def poly_degree_v_acc(results, sp=True):
 	if sp: plt.subplot(rows,cols,get_gn())
 
 	k_poly = [x for x in results if x["param"]["kernel"] == 'poly']
-	# Cs = list(set([x["param"]["C"] for x in k_poly]))
-	# Cs = [2,3,4]
+	
 	Cs = [3]
 	for i, C in enumerate(Cs):
 		poly_vs_deg = [x for x in k_poly if str(x["param"]["ID"]).startswith("PvD") and x["param"]["C"] == C]
@@ -195,14 +186,12 @@ def poly_degree_v_acc(results, sp=True):
 	plt.ylabel('Accuracy')
 	plt.xlabel('Degree')
 	plt.legend(loc="upper right")
-	# plt.ylim(0.05, 0.3)
 
 
 def poly_degree_v_f1(results, sp=True):
 	if sp: plt.subplot(rows,cols,get_gn())
 
 	k_poly = [x for x in results if x["param"]["kernel"] == 'poly']
-	# Cs = list(set([x["param"]["C"] for x in k_poly]))
 	Cs = [2,3,4]
 	for i, C in enumerate(Cs):
 		poly_vs_deg = [x for x in k_poly if str(x["param"]["ID"]).startswith("PvD") and x["param"]["C"] == C]
@@ -215,7 +204,6 @@ def poly_degree_v_f1(results, sp=True):
 	plt.ylabel('F1')
 	plt.xlabel('Degree')
 	plt.legend(loc="upper right")
-	# plt.ylim(0.05, 0.3)
 
 
 
@@ -226,7 +214,6 @@ def f1_pc_v_dimensionality(results, sp=True):
 	k_linear = sorted(k_linear, key = lambda i: i["param"]['pca'])
 	pcas = [x["param"]["pca"] for x in k_linear]
 	
-	# class_scores = []
 	for ci, c in enumerate(get_classes()):
 		res = {}
 		res["f1s"] = [x["test"]["f1_pc"][ci] for x in k_linear]
@@ -281,15 +268,11 @@ def rbf_gamma_v_f1(results, sp=True):
 	
 	
 	plt.legend(loc="lower right")
-	# f1s = [x["run"]["cv_f1"] for x in k_rbf]
-	# plt.ylim(0.05, 0.3)
-
-
 
 
 # Plotting helper functions
 # -------------------------
-
+# Plot line
 def plot(x, y, i=0, label=None):
 	plt.plot(x, y, 
 		label=label, 
@@ -306,12 +289,10 @@ def get_gn():
 	return gn
 
 # Graph point code
-def get_m():
-	return "o"
+def get_m(): return "o"
 
 # Graph line type
-def get_ls():
-	return "--"
+def get_ls(): return "--"
 
 # Color codes
 def get_c(index):
@@ -319,7 +300,7 @@ def get_c(index):
 	return cs[index]
 
 # Matplotlib line code
-# DEPRECATED
+# -- DEPRECATED --
 def get_lc(index):
 	cs = ['b', 'g', 'r', 'c', 'm', 'y', 'k', 'r', 'g', 'r']
 	lcs = ["{}{}{}".format(get_m(), c, get_ls()) for c in cs]
@@ -378,14 +359,9 @@ def save_plots(results):
 	rbf_gamma_v_f1(results, sp=False)
 	plt.savefig(p.format("rbf_gamma_v_f1"))
 
-	print("Images saved")
+	print("Images saved to figs/")
 
 
-# If no filepath passed in use results.csv
 if __name__ == "__main__":
-	if len(sys.argv) > 1:
-		main(str(sys.argv[1]))
-	else:
-		f_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'results.csv')
-		main(f_path)
+	main()
 		

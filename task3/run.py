@@ -150,6 +150,7 @@ class RunTest():
 def main():
     trainset, trainloader, testset, testloader, data_info = load_data()
 
+    # Initial Parameters
     params = {}
     params["data"] = data_info
     params["n_train"] = 50000
@@ -160,56 +161,63 @@ def main():
     params["test_every_epoch"] = False
 
 
+    # Fully Connected Network
     params["model"] = "FCN"
-    params["tid"] = 0
+    params["tid"] = 1
     for layer in [1, 2, 3]:
         params["hidden_layers"] = layer
-        # RunTest(FCN(hidden_layers=layer), params, trainloader, testloader, id="FCN_{}".format(layer))
+        RunTest(FCN(hidden_layers=layer), params, trainloader, testloader, id="FCN_{}".format(layer))
 
 
-    # params["model"] = "ConvX"
-    # params["tid"] = 2
-    # RunTest(Conv1(), params, trainloader, testloader, id="Conv1")
-    # RunTest(Conv2(), params, trainloader, testloader, id="Conv2")
-    # RunTest(Conv3(), params, trainloader, testloader, id="Conv3")
+    # Testing 3 models, each with a different number of Convolutions
+    params["model"] = "ConvX"
+    params["tid"] = 2
+    RunTest(Conv1(), params, trainloader, testloader, id="Conv1")
+    RunTest(Conv2(), params, trainloader, testloader, id="Conv2")
+    RunTest(Conv3(), params, trainloader, testloader, id="Conv3")
 
 
-    # params["tid"] = 3
-    # params["model"] = "AvgPool"
-    # RunTest(AvgPool(), params, trainloader, testloader, id="AvgPool")
+    # Trialing Average Pooling to compare with Max Pooling
+    params["tid"] = 3
+    params["model"] = "AvgPool"
+    RunTest(AvgPool(), params, trainloader, testloader, id="AvgPool")
 
 
-    # params["tid"] = 4
-    # params["model"] = "ReLU"
-    # RunTest(ReLU(), params, trainloader, testloader, id="ReLU")
-    # params["model"] = "Sigmoid"
-    # RunTest(Sigmoid(), params, trainloader, testloader, id="Sigmoid")
-    # params["model"] = "SoftMax"
-    # RunTest(SoftMax(), params, trainloader, testloader, id="SoftMax")
-    # params["model"] = "Tanh"
-    # RunTest(SoftMax(), params, trainloader, testloader, id="Tanh")
-    # params["model"] = "ReLU6"
-    # RunTest(ReLU6(), params, trainloader, testloader, id="ReLU6")
+    # Trialing different activation functions
+    params["tid"] = 4
+    params["model"] = "ReLU"
+    RunTest(ReLU(), params, trainloader, testloader, id="ReLU")
+    params["model"] = "Sigmoid"
+    RunTest(Sigmoid(), params, trainloader, testloader, id="Sigmoid")
+    params["model"] = "SoftMax"
+    RunTest(SoftMax(), params, trainloader, testloader, id="SoftMax")
+    params["model"] = "Tanh"
+    RunTest(SoftMax(), params, trainloader, testloader, id="Tanh")
+    params["model"] = "ReLU6"
+    RunTest(ReLU6(), params, trainloader, testloader, id="ReLU6")
 
 
-    # params["tid"] = 5
-    # params["model"] = "Channel"
-    # RunTest(Channel(5, 15), params, trainloader, testloader, id="(5, 15)")
-    # RunTest(Channel(6, 18), params, trainloader, testloader, id="(6, 18)")
-    # RunTest(Channel(10,20), params, trainloader, testloader, id="(10,20)")
-    # RunTest(Channel(14,42), params, trainloader, testloader, id="(14,42)")
+    # Testing different channels
+    params["tid"] = 5
+    params["model"] = "Channel"
+    RunTest(Channel(5, 15), params, trainloader, testloader, id="(5, 15)")
+    RunTest(Channel(6, 18), params, trainloader, testloader, id="(6, 18)")
+    RunTest(Channel(10,20), params, trainloader, testloader, id="(10,20)")
+    RunTest(Channel(14,42), params, trainloader, testloader, id="(14,42)")
 
 
-    # params["tid"] = 6
-    # params["model"] = "HyperParams"
-    # params["num_epochs"] = 12
-    # params["test_every_epoch"] = True
-    # RunTest(HyperParams(), params, trainloader, testloader, id="HyperParams_Epoch")
+    # Testing the best number of epochs
+    params["tid"] = 6
+    params["model"] = "HyperParams"
+    params["num_epochs"] = 12
+    params["test_every_epoch"] = True
+    RunTest(HyperParams(), params, trainloader, testloader, id="HyperParams_Epoch")
 
 
+    # Testing different orders of learning rate
     params["tid"] = 7
     params["model"] = "HyperParams"
-    params["num_epochs"] = 5
+    params["num_epochs"] = 2
     params["test_every_epoch"] = False
     for lr_e in [-1, -2, -3, -4, -5]:
         params["lr"] = 10 ** lr_e
