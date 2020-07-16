@@ -23,6 +23,10 @@ log = get_logger(os.path.join(os.path.dirname(os.path.abspath(__file__)), 'task3
 
 
 class RunTest():
+    """
+    This is the test runner class, parameters and a model are passed in
+    The class runs the tests and appends the results to results.csv
+    """
     def __init__(self, net, params, trainloader, testloader, id=None):
         self.id = id
         self.net = net
@@ -44,7 +48,7 @@ class RunTest():
         self.criterion = nn.CrossEntropyLoss()
         self.optimizer = optim.SGD(self.net.parameters(), lr=self.res["params"]["lr"], momentum=self.res["params"]["momentum"])
 
-        print("\nID: {} - {}".format(self.id, self.res["datetime"]))
+        log.info("\nID: {} - {}".format(self.id, self.res["datetime"]))
         self.main()
 
 
@@ -86,12 +90,6 @@ class RunTest():
                 loss.backward()
                 self.optimizer.step()
 
-                # print statistics
-                running_loss += loss.item()
-                if i % 2000 == 1999:    # print every 2000 mini-batches
-                    print('[%d, %5d] loss: %.3f' % (epoch + 1, i + 1, running_loss / 2000))
-                    running_loss = 0.0
-
             if self.res["params"]["test_every_epoch"]:
                 self.res["train"]["epochs"].append(self.test())
                 self.save_results()
@@ -99,7 +97,7 @@ class RunTest():
 
 
     def test(self):
-        print("Testing..")
+        log.info("Testing..")
         test_res = {}
         test_start = time.time()
         y_test = []
@@ -122,10 +120,7 @@ class RunTest():
         test_res["recall_pc"] = list(recall_score(y_test, y_pred, labels=range(10), average=None))
 
 
-        print ("Accuracy: {}".format(test_res["accuracy"]))
-        # for i, f1 in enumerate(test_res["f1_pc"]):
-        #     print("{}: {:.3f}".format(get_label(i), f1))
-
+        log.info("Accuracy: {}".format(test_res["accuracy"]))
         test_res["runtime"] = time.time() - test_start
         return test_res
 
@@ -134,12 +129,12 @@ class RunTest():
     def load(self, name):
         path = "models/{}.pth".format(name)
         self.net.load_state_dict(torch.load(path))
-        print("Model loaded from " + path)
+        log.info("Model loaded from " + path)
 
     def save(self, name):
         path = "models/{}.pth".format(name)
         torch.save(self.net.state_dict(), path)
-        print("Model saved to " + path)
+        log.info("Model saved to " + path)
 
     def save_results(self):
         with open('results.csv', 'a+') as f:
