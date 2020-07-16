@@ -1,0 +1,1011 @@
+\PassOptionsToPackage{unicode=true}{hyperref} % options for packages loaded elsewhere
+\PassOptionsToPackage{hyphens}{url}
+%
+\documentclass[]{article}
+\usepackage{lmodern}
+\usepackage{amssymb,amsmath}
+\usepackage{ifxetex,ifluatex}
+\usepackage{fixltx2e} % provides \textsubscript
+\ifnum 0\ifxetex 1\fi\ifluatex 1\fi=0 % if pdftex
+  \usepackage[T1]{fontenc}
+  \usepackage[utf8]{inputenc}
+  \usepackage{textcomp} % provides euro and other symbols
+\else % if luatex or xelatex
+  \usepackage{unicode-math}
+  \defaultfontfeatures{Ligatures=TeX,Scale=MatchLowercase}
+\fi
+% use upquote if available, for straight quotes in verbatim environments
+\IfFileExists{upquote.sty}{\usepackage{upquote}}{}
+% use microtype if available
+\IfFileExists{microtype.sty}{%
+\usepackage[]{microtype}
+\UseMicrotypeSet[protrusion]{basicmath} % disable protrusion for tt fonts
+}{}
+\IfFileExists{parskip.sty}{%
+\usepackage{parskip}
+}{% else
+\setlength{\parindent}{0pt}
+\setlength{\parskip}{6pt plus 2pt minus 1pt}
+}
+\usepackage{hyperref}
+\hypersetup{
+            pdfborder={0 0 0},
+            breaklinks=true}
+\urlstyle{same}  % don't use monospace font for urls
+\usepackage{color}
+\usepackage{fancyvrb}
+\newcommand{\VerbBar}{|}
+\newcommand{\VERB}{\Verb[commandchars=\\\{\}]}
+\DefineVerbatimEnvironment{Highlighting}{Verbatim}{commandchars=\\\{\}}
+% Add ',fontsize=\small' for more characters per line
+\newenvironment{Shaded}{}{}
+\newcommand{\AlertTok}[1]{\textcolor[rgb]{1.00,0.00,0.00}{\textbf{#1}}}
+\newcommand{\AnnotationTok}[1]{\textcolor[rgb]{0.38,0.63,0.69}{\textbf{\textit{#1}}}}
+\newcommand{\AttributeTok}[1]{\textcolor[rgb]{0.49,0.56,0.16}{#1}}
+\newcommand{\BaseNTok}[1]{\textcolor[rgb]{0.25,0.63,0.44}{#1}}
+\newcommand{\BuiltInTok}[1]{#1}
+\newcommand{\CharTok}[1]{\textcolor[rgb]{0.25,0.44,0.63}{#1}}
+\newcommand{\CommentTok}[1]{\textcolor[rgb]{0.38,0.63,0.69}{\textit{#1}}}
+\newcommand{\CommentVarTok}[1]{\textcolor[rgb]{0.38,0.63,0.69}{\textbf{\textit{#1}}}}
+\newcommand{\ConstantTok}[1]{\textcolor[rgb]{0.53,0.00,0.00}{#1}}
+\newcommand{\ControlFlowTok}[1]{\textcolor[rgb]{0.00,0.44,0.13}{\textbf{#1}}}
+\newcommand{\DataTypeTok}[1]{\textcolor[rgb]{0.56,0.13,0.00}{#1}}
+\newcommand{\DecValTok}[1]{\textcolor[rgb]{0.25,0.63,0.44}{#1}}
+\newcommand{\DocumentationTok}[1]{\textcolor[rgb]{0.73,0.13,0.13}{\textit{#1}}}
+\newcommand{\ErrorTok}[1]{\textcolor[rgb]{1.00,0.00,0.00}{\textbf{#1}}}
+\newcommand{\ExtensionTok}[1]{#1}
+\newcommand{\FloatTok}[1]{\textcolor[rgb]{0.25,0.63,0.44}{#1}}
+\newcommand{\FunctionTok}[1]{\textcolor[rgb]{0.02,0.16,0.49}{#1}}
+\newcommand{\ImportTok}[1]{#1}
+\newcommand{\InformationTok}[1]{\textcolor[rgb]{0.38,0.63,0.69}{\textbf{\textit{#1}}}}
+\newcommand{\KeywordTok}[1]{\textcolor[rgb]{0.00,0.44,0.13}{\textbf{#1}}}
+\newcommand{\NormalTok}[1]{#1}
+\newcommand{\OperatorTok}[1]{\textcolor[rgb]{0.40,0.40,0.40}{#1}}
+\newcommand{\OtherTok}[1]{\textcolor[rgb]{0.00,0.44,0.13}{#1}}
+\newcommand{\PreprocessorTok}[1]{\textcolor[rgb]{0.74,0.48,0.00}{#1}}
+\newcommand{\RegionMarkerTok}[1]{#1}
+\newcommand{\SpecialCharTok}[1]{\textcolor[rgb]{0.25,0.44,0.63}{#1}}
+\newcommand{\SpecialStringTok}[1]{\textcolor[rgb]{0.73,0.40,0.53}{#1}}
+\newcommand{\StringTok}[1]{\textcolor[rgb]{0.25,0.44,0.63}{#1}}
+\newcommand{\VariableTok}[1]{\textcolor[rgb]{0.10,0.09,0.49}{#1}}
+\newcommand{\VerbatimStringTok}[1]{\textcolor[rgb]{0.25,0.44,0.63}{#1}}
+\newcommand{\WarningTok}[1]{\textcolor[rgb]{0.38,0.63,0.69}{\textbf{\textit{#1}}}}
+\usepackage{graphicx,grffile}
+\makeatletter
+\def\maxwidth{\ifdim\Gin@nat@width>\linewidth\linewidth\else\Gin@nat@width\fi}
+\def\maxheight{\ifdim\Gin@nat@height>\textheight\textheight\else\Gin@nat@height\fi}
+\makeatother
+% Scale images if necessary, so that they will not overflow the page
+% margins by default, and it is still possible to overwrite the defaults
+% using explicit options in \includegraphics[width, height, ...]{}
+\setkeys{Gin}{width=\maxwidth,height=\maxheight,keepaspectratio}
+\setlength{\emergencystretch}{3em}  % prevent overfull lines
+\providecommand{\tightlist}{%
+  \setlength{\itemsep}{0pt}\setlength{\parskip}{0pt}}
+\setcounter{secnumdepth}{0}
+% Redefines (sub)paragraphs to behave more like sections
+\ifx\paragraph\undefined\else
+\let\oldparagraph\paragraph
+\renewcommand{\paragraph}[1]{\oldparagraph{#1}\mbox{}}
+\fi
+\ifx\subparagraph\undefined\else
+\let\oldsubparagraph\subparagraph
+\renewcommand{\subparagraph}[1]{\oldsubparagraph{#1}\mbox{}}
+\fi
+
+% set default figure placement to htbp
+\makeatletter
+\def\fps@figure{htbp}
+\makeatother
+
+
+\date{}
+
+\begin{document}
+
+\hypertarget{header-n0}{%
+\section{Interim Report}\label{header-n0}}
+
+\hypertarget{header-n2}{%
+\subsection{Abstract}\label{header-n2}}
+
+Medical data of an individual is commonly stored in a fragmented manner
+in many different locations which restricts ease of retrieval by
+patients and the collation of large useful datasets by researchers.
+Furthermore, studies have shown that patients benefit from a clear
+holistic view of their medical data {[}9{]}. Blockchain has the
+potential to free up medical data, advancing research and improving the
+healthcare delivery. At the same time blockchain technology enhances
+patient privacy and security. Medilanac is a blockchain networking
+design which, unlike other similar implementations, stores medical data
+on the blockchain itself. Our design, the Medilanac, proposes a new
+protocol to overcome the inherent inefficiencies of storing large
+datasets on the blockchain posed by the technology itself. Therefore
+maintaining the data validation and recovery functionality of standard
+blockchain technology, and at the same time allowing for the storage of
+large and diverse data sets.
+
+\hypertarget{header-n4}{%
+\subsection{Background and Motivation}\label{header-n4}}
+
+The increase in data harvesting and storage in recent years has led to
+an increase in the widespread development of artificial intelligence
+systems for statistical analysis and pattern recognition on large
+datasets for the purpose of improving healthcare. Consequentially,
+conversations about the trade off between advancements in medical
+research and the right to privacy of the individual have become
+mainstream {[}3{]}.
+
+For many medical professionals, their skills development and
+consequently their contributions to healthcare are inhibited by a lack
+of accurate and timely feedback {[}1{]}. AI systems do not suffer from
+such a problem. With large datasets, AI systems facilitate data analysis
+that can divulge complex patterns linking specific practices/decisions
+undertaken during treatment of individuals, with significant outcomes
+and degrees of success that would otherwise not be elucidated. Newly
+discovered practices can then be adopted, improving healthcare {[}4{]}.
+They are able to examine, in detail, orders of magnitude more medical
+records than human doctors can in their finite careers, learning and
+improving from each one, allowing them to give more accurate diagnoses
+and recommendations for treatment.
+
+A decentralized, international medical database which is available to
+all could facilitate significant improvements in medical practices. The
+ability to compare the short-term and long-term outcomes of treatments
+performed in different locations around the world, would facillitate
+analysis of the strengths and weaknesses of diverse practices, and serve
+as a major catalyst for improvement {[}5{]}. Providing patients with a
+clearer view of their complete medical records would also offer more
+immediate benefit {[}9{]}.
+
+\hypertarget{header-n8}{%
+\subsection{Literature Review}\label{header-n8}}
+
+Many attempts have been made to combine medical data and blockchain
+technology. However, none has managed to find a solution to the inherent
+problem with blockchain which is that it is poorly suited to storing
+large amounts of data {[}2{]}. This is because every user (node) on the
+network must have a complete copy of the entire blockchain.
+
+As the blockchian is an \emph{append only} data structure, if we were to
+merely create a protocol that allowed for medical data to be stored on a
+standard blockchain, it is likely that it would either quickly grow to
+an unmanageable size or would not be able to store adequate amounts of
+data in a timely manner; From Q3 2018 to Q3 2019, Bitcoin, the most
+prominent cryptocurrency built on top of a blockchain, saw its
+blockchain size increase by 57.764 GB to a total of 242 GB, from an
+estimated 5.8 million active users {[}6,7{]}. We can therefore calculate
+that the average annual blockchain data contribution is approximately 10
+KB per person per year. Consequently, if someone wants to store and
+retrieve the annual transaction data of say 5000 people, amounting to 50
+MB, they must store the entire 242GB blockchain, some 4840 times more
+data than that of which they desire. When considering a typical small GP
+clinic hoping to store the medical records of its 5000 registered
+patients on a system equivalent in design to bitcoin but repurposed for
+the storage of medical data, the problem is clear {[}26{]}.
+
+\hypertarget{header-n11}{%
+\subsubsection{Blockchain}\label{header-n11}}
+
+Blockchain was originally conceptualised by an individual acting under
+the alias of 'Satoshi Nakamoto' for the purpose of creating a
+decentralised trust-less peer-to-peer cash system {[}2{]}. Their paper
+proposes a public ledger that is append-only and completely immutable.
+That is, once something has been added to the ledger and accepted by the
+majority of the rest of the network, it is nearly impossible to change
+it. To do so would require cooperation of at least 51\% of the computing
+power on the network, something that the protocol relies on being
+unachievable for the security of the network.
+
+The protocol hosts an ongoing open competition pitting
+contestants(\emph{miners}) against each other, all attempting to be the
+first to solve a computationally laborious maths puzzle. The winner is
+able to publish the next block (containing users data) on to the
+blockchain and receive their reward for doing so. The maths puzzle is
+such that it is difficult to find the answer, but easy to verify the
+correct one. Therefore once any given miner successfully finds the
+answer to the next block, all other nodes can quickly verify it and
+begin working on finding the solution to the subsequent block.
+
+\begin{figure}
+\centering
+\includegraphics{/Users/lukestanislawski/UoN/Third Year/FYP/Interim Report/IR_Plan.assets/Blockchain_nb.png}
+\caption{}
+\end{figure}
+
+The majority of the data within each block is data submitted by the end
+users to the miners for publishing. This data must also meet a set of
+criteria that all of the miners agree to. If the data does not meet the
+accepted criteria, it will be invalid and will not be accepted onto the
+blockchain by the rest of the network.
+
+\hypertarget{header-n16}{%
+\paragraph{Smart Contracts}\label{header-n16}}
+
+In recent years, the most significant developments have emerged in the
+form of smart contracts. Blockchains such as the Ethereum blockchain
+allow for code written in Turing-complete languages to be added and
+executed on the blockchain {[}16{]}. The advent of smart contracts has
+meant that functionality of blockchains has moved beyond just the mere
+storage of data, and towards the advent of distributed computing {[}21,
+22{]}. It is now possible to execute complex and immutable programs in
+predefined, predictable ways. Untrusting parties are therefore able to
+cooperate in ever increasing amounts, whilst maintaining assurance
+against security breaches.
+
+\hypertarget{header-n18}{%
+\paragraph{Blockchain Sharding}\label{header-n18}}
+
+Zamani et al introduced a method of sharding a blockchain such that
+minimal node inter-shard validation is required {[}20{]}. Validation is
+carried out by a \emph{committee} of nodes elected for each
+\emph{epoch}. The committee of each shard is responsible for
+communicating with the committee of other shards in order to validate
+data on their own shard for which the process of validation requires
+data on a different shard. Minimal validation is undertaken by the
+majority of nodes on the network, and very few of them are required to
+process data from other shards with each \emph{epoch}.
+
+\hypertarget{header-n20}{%
+\subsubsection{Erasure Coding}\label{header-n20}}
+
+Data redundancy is an inevitability when ensuring reliability in a
+network {[}18{]}. Erasure coding is a way of maximising the reliability
+whilst minimising the data redundancy required to achieve it. The
+encoding algorithm is a method of protecting data \(d_{o}\) from
+corruption/loss by splitting the data into \(k\) \emph{fragments}
+(\( f_{i}, i = 1..k-1\)) and then encoding those fragments into
+\emph{chunks} \(c_{i}, i = 0..m-1\), such that the original data can be
+recovered with any number \(k, k<m\) of the chunks {[}14{]}. Each of the
+encoded chunks is one of the linear combinations of the fragments of
+\(d_{o}\). The summation of size of all encoded fragments is greater
+than the size of the original data,
+\( \sum_{i=0}^{m-1}size(c_{i}) > size(d_{o})\); hence the aforementioned
+inevitable redundancy.
+
+The Medilanac system uses erasure coding as a method of mitigating the
+risk of failure to reconstruct a block on the network as a result of
+data loss. We will do this by requiring every block that is added to the
+network to be encoded into \(m\) chunks using erasure coding. These
+chunks will then be stored on various different branches on the network.
+
+\hypertarget{header-n23}{%
+\paragraph{Blockchain and Erasure Coding}\label{header-n23}}
+
+One of the design challenges with splitting each block up into pieces
+and storing them in different locations is that blockchain protocols
+require every single byte of a block to be present. If a single one is
+missing, the hash cannot be verified and the blockchain is broken.
+Therefore if a single chunk was lost, the entire blockchain from that
+block onwards would become invalid and could not be reconstructed. For
+the system to be useable, it must have a reasonable fault tolerance. We
+must therefore incorporate a way to allow for some chunks to be lost and
+still be able to reconstruct an entire block.
+
+Perard et al propose the idea of a Low Storage Node on a blockchain
+{[}17{]}. Their system design incorporates erasure coding such that
+nodes need not store a copy of each entire block, but merely a single
+chunk of data from each. Greatly reducing the amount of data each node
+is required to store. Their system is designed to be more accommodating
+to nodes with less storage capacity but is not equipped to deal with a
+the heavy data requirements of medical data on a large scale.
+Furthermore, the network requires miners to compete to add blocks to the
+network. This is a hugely inefficient design as it requires significant
+infrastructure and electricity to maintain. A study from The University
+of Cambridge found that Bitcoin's annual energy consumption is roughly
+in line with that of Switzerland {[}23, 24{]}. These are costs that are
+ultimately passed onto the patients.
+
+Furthermore, their solution In forcing all nodes to store the same
+(reduced) amount of data and is therefore not suitable for the storage
+of medical data as it fails to handle the inevitability of some nodes
+producing more data than others. With no motivation to moderately add
+data to the network, a 'tragedy of the commons' situation emerges such
+that the size of the blockchain would rapidly explode and become
+unusable.
+
+\hypertarget{header-n25}{%
+\subsubsection{Blockchain In Medical Data}\label{header-n25}}
+
+\hypertarget{header-n26}{%
+\paragraph{MedRec}\label{header-n26}}
+
+One of the most notable current implementations combining blockchain and
+the storage of medical data is that of MedRec, a Medical record storage
+system built to work on top of the Ethereum blockchain {[}8{]}. The
+system uses smart contracts to manage the permissions of medical record
+viewership, incentivising miners with the reward of anonymised medical
+data that can be used for research. The medical data itself is stored on
+healthcare providers databases who allow anyone who has the permission
+of the owner (according to the blockchain) to view or update the medical
+records.
+
+MedRec gives users a comprehensive and holistic view of when and by whom
+their medical data has been changed, which benefits patients {[}9{]}.
+Privacy concerns are combatted with transparency by allowing patients to
+more easily see what information can be derived from their complete set
+of medical data. Patients can therefore be more confident that their
+data is unlikely to exist anywhere else such that it could be
+aggregated, allowing for more information to be derived without their
+knowledge.
+
+The greatest weakness of this approach are that the individuals must
+still trust their service providers to offer a \emph{good} service.
+Individuals must trust that the provider will sufficiently backup and
+manage their databases, so that their data will not be lost. If the data
+itself is lost then the provider would not be capable of retrieving it
+for the patient and the smart contract on the blockchain would become
+void. Patients are required to trust that the provider will implement
+adequate security measures to their databases in order to prevent their
+medical data being stolen and their privacy breached. Similarly, they
+must also trust that the provider will not sell or share their data
+without the permission of the patient, no guarantee of which is given by
+the permissions of the blockchain. Finally the patient is required to
+trust that the provider will not withhold the data from the patient or
+any authorised party. It is easy to assume that the business model of
+the provider would incorporate some assurances in relation to these
+issues, however business decisions are often overruled by governments or
+other subjective motivations.
+
+\hypertarget{header-n30}{%
+\paragraph{e-Estonia}\label{header-n30}}
+
+Many similar system designs have been proposed by others, all of which
+require data to be stored off-chain, and only access rights to be stored
+on-chain {[}10, 11{]}. One such system is that of the KSI blockchain
+system used for the Estonian "e-Estonia" initiative {[}19{]}. The
+national blockchain system stores data and backups on servers in a
+conventional manner. The blockchain is then combined with a
+time-stamping server to ensure authenticity and time of permissions.
+This system is therefore predominantly centralised; the government has
+complete control over the time-stamping server, databases and blockchain
+itself. It is theoretically possible, therefore, for the government to
+edit and remove data on the blockchain, or forge a timestamp for data.
+
+\hypertarget{header-n32}{%
+\paragraph{MedBlock}\label{header-n32}}
+
+The system proposed by Fan et al proposes a distributed ledger
+containing only summaries or electronic medical records (EMRs), the
+detailed sources of which remain in the databases of health service
+providers {[}12{]}. The EMR summaries also contain the cryptographic
+hashes of the source data to ensure they are tamper-proof. However,
+patients must still trust the service providers to competently and
+ethically store the full EMRs for them, which they often do not
+{[}25{]}, and therefore many of the same issues arise as with the MedRec
+system.
+
+\hypertarget{header-n34}{%
+\paragraph{Third Party Hosting}\label{header-n34}}
+
+Zyskind et al put forward a system where a data storage service is
+trusted with an encrypted version of the medical data, and a blockchain
+used for logging and permissions control {[}13{]}. The idea of
+encrypting data stored by the service provider offers good protection
+against unauthorised sharing of the data as it is of no use without the
+key. Therefore a system design ensuring that the party storing the
+patients data never possesses the key to said data eliminates this
+requirement of the patient to trust in the provider to not share their
+data without permission. However, there is no guarantee that the data
+storage service will not withhold or lose the (encrypted) data.
+Therefore the patients must still trust the provider to store their data
+competently and act within the confines of their agreement.
+
+\hypertarget{header-n36}{%
+\subsection{Methodology}\label{header-n36}}
+
+This project is tasked to design of an algorithm which incorporates
+multiple different stakeholders. As such, higher level functional
+requirements can be defined that apply to the system design as a whole,
+while lower level non-functional requirements apply only to their
+respective stakeholders.
+
+\hypertarget{header-n38}{%
+\subsubsection{Functional Requirements}\label{header-n38}}
+
+The system must satisfy all of the following requirements:
+
+\begin{enumerate}
+\def\labelenumi{\arabic{enumi}.}
+\item
+  Data must be stored such that the data owner does not need to trust
+  the data storer to:
+
+  \begin{enumerate}
+  \def\labelenumii{\arabic{enumii}.}
+  \item
+    Adequately protect data from loss and theft,
+  \item
+    Not share data without permission from the data owner,
+  \item
+    Not withhold data from owner.
+  \end{enumerate}
+\item
+  Data must be able to be retrieved in a timely manner.
+\item
+  The data owner must be able to remain in control of their data.
+\item
+  The user must not be required to store an \emph{unreasonable} amount
+  of extra data when adding their own.
+\item
+  Publicly shared data should be in a format that facilitates large
+  scale data mining.
+\end{enumerate}
+
+\hypertarget{header-n58}{%
+\subsubsection{Non-functional requirements}\label{header-n58}}
+
+\hypertarget{header-n59}{%
+\paragraph{Data Storage Provider (Miner)}\label{header-n59}}
+
+The network protocol must ensure that all blocks added to the network
+conform to the following set of standards, and that blocks failing to do
+so are not accepted by the rest of the network:
+
+\begin{itemize}
+\item
+  Each block must be signed to ensure authenticity.
+\item
+  Each block must contain a number of foreign chunks such that the size
+  of data used by the foreign chunks is equal to the size of data used
+  by the branch's own data, plus the threshold amount.
+\item
+  Blocks must be split up into chunks using erasure coding and submitted
+  for storage on other branches.
+\end{itemize}
+
+\hypertarget{header-n68}{%
+\paragraph{Patients (Users)}\label{header-n68}}
+
+\begin{itemize}
+\item
+  Users/patients must add data in a format the conforms to a specific
+  schema.
+\item
+  Data must be signed.
+\item
+  Private data must be encrypted.
+\end{itemize}
+
+\hypertarget{header-n76}{%
+\subsection{System Design}\label{header-n76}}
+
+Instead of a single blockchain with many miners competing against each
+other, the proposed system requires each miner to have their own
+permissive blockchain shard (branch), that is, a blockchain that can
+only be added to by its 'own' miner. Furthermore, they can do this
+without being required to solve any maths puzzle. This means that every
+miner on the network has complete control over when they add extra nodes
+to their branch. As the miners are the only ones storing a full copy of
+their blockchain, they are also \emph{expected} to share their entire
+chain with anyone who wishes to query it, although an explanation is
+presented later of how the network can cope with a node that does not
+comply.
+
+\begin{figure}
+\centering
+\includegraphics{/Users/lukestanislawski/UoN/Third Year/FYP/Interim Report/IR_Plan.assets/Adding_Block.png}
+\caption{}
+\end{figure}
+
+\emph{Adding a block C4 to branch C requires the miner to also add
+chunks from blocks in other branches to C4.}
+
+We do however introduce a new restriction to the network protocol. With
+each block added to their blockchain, the miner must include a number of
+\emph{chunks} of blocks from the blockchains of other miners. Chunks are
+the erasure code fragments of blocks on the network that can be
+reconstructed (with any number \(n \geq k\)) into the original block.
+Data on a branch pertaining to another will from here on be referred to
+as \emph{secondary} data consisting of foreign chunks. The data
+created/added by the miner of a blockchain will be known as
+\emph{primary} data. Hence primary data on one branch is encoded into
+chunks and becomes secondary data on a different branch. In accepting
+secondary data, miners are essentially contributing to the back up of
+other blocks on the network. The required ratio of primary/secondary
+data in each block on the network is defined by the protocol, but will
+have to be a minimum of \((k + m) S_{p}\) where \(S_{p}\) is the size of
+the primary data in each block.
+
+After adding the block, the miner must use erasure coding to encode the
+block's primary data into chunks, and send to other miners on the
+network to store on their blockchains (as foreign data). If the miner
+loses access to a chunk on another branch, they must replace it on a
+different branch in the network in order to maintain a sufficient backup
+on the network.
+
+\begin{figure}
+\centering
+\includegraphics{/Users/lukestanislawski/UoN/Third Year/FYP/Interim Report/IR_Plan.assets/Block.png}
+\caption{}
+\end{figure}
+
+\emph{Logical overview of the contents of each block on a blockchain.}
+
+\begin{quote}
+TODO: Change Domestic/Foreign data labels in image
+\end{quote}
+
+Without erasure coding, the miner of any given branch (\(b_{i}\))
+storing a fragment of any block originating from another (\(b_{j}\)),
+would have the power to corrupt the backup of the corresponding block.
+By the very nature of blockchain, it is essential to know the value of
+every single bit and byte of each block, otherwise the hash of the block
+cannot be verified and every subsequent block becomes invalid. Erasure
+coding is used so that in the event of a patients losing access to a
+branch, whether from loss of data or from an uncooperative service
+provider, the primary data of a branch can be reconstructed with \(k\)
+foreign chunks, as opposed to all \(m\) fragments. Therefore, as long as
+a large enough proportion of the nodes storing the data (\(k/m\))
+successfully return the data, we can reconstruct all primary data on a
+branch.
+
+For the network to function correctly a certain proportion of nodes must
+be cooperating with the rest of the network. This proportion is
+hypothesised to be mathematically related to the amount of additional
+erasure code that is generated for each block, and the number of
+branches on the network. However, further investigation is required in
+order to confirm this hypothesis and find an exact relationship.
+
+\hypertarget{header-n88}{%
+\subsubsection{Stakeholder Motivations}\label{header-n88}}
+
+Outlined below is a description of the motivations of both the miners
+and patients, as well as the consequences of critical actions/inactions
+from both.
+
+\hypertarget{header-n90}{%
+\paragraph{Miners}\label{header-n90}}
+
+Just as is commonly the case in current systems, miners are financially
+incentivised to store patient data on the network, either through
+government or private funding. However, they must also \emph{donate} an
+amount of storage to the network proportional to the amount they use.
+Therefore they cannot spam the network with data as to do so would also
+require them to donate large amounts of storage to the network, a
+troublesome task which would ultimately negate the affects of their
+intentions. Miners will also need to periodically check that chunks they
+have stored on other branches are still accessible.
+
+Miners have no direct incentive to release foreign data upon the request
+of another branch requesting. However, uncooperative nodes will
+eventually be discovered after enough failed requests, and will find
+themselves blacklisted by most other miners on the network. The network
+assumes that the majority of branch owners intend to work together, and
+can handle a certain threshold of malicious nodes. Therefore a node
+looking to cut costs by not handling requests from other nodes whilst
+resting assured that their data is sufficiently backed up, may soon find
+themselves \emph{shunned} from the network.
+
+\hypertarget{header-n93}{%
+\paragraph{Patients}\label{header-n93}}
+
+Patients have the choice of which branch to select to store their data.
+As each branch offers a near identical service, and mobility of data is
+high, service prices will remain competitive. Many branches will offer
+incentives such as discounts in return for de-anonymisation of certain
+medical information which could be used for research. Governments may
+set up multiple branches and provide the service for free. Either way,
+the choice remains with the patient.
+
+All patient data uploaded to the network will be visible to all parties;
+this is required in order to validate the data with regards to the
+hashes on the blockchain. Therefore patients will be required to encrypt
+any private medical data. Patients will be able to easily upload any
+data to the network unencrypted or share read-only keys with specific
+parties should they wish to donate personal data for research purposes.
+
+\hypertarget{header-n96}{%
+\subsection{Implementation}\label{header-n96}}
+
+The implementation of the Medilanac network protocol consists of a
+simulation of the different components and stakeholders of the network.
+The system will incorporate all of the relevant security features to
+make it as robust as a deployable version of the network would be. The
+simulation will be able to span across multiple different machines on
+multiple different networks. This is important as the original algorithm
+will most likely be implemented on top of the TCP/IP layer of the
+Internet. Therefore a working simulation that incorporates the
+technologies that already exist offers a stronger proof of
+implementability.
+
+Currently the system has some security features in place such as the
+hashes linking blocks together, and digital signatures of chunks
+published to the exchange. However, the system is still insecure and
+does not adequately represent the level of security required.
+
+\hypertarget{header-n99}{%
+\subsubsection{Modules}\label{header-n99}}
+
+The blockchain generation module will consist of simulated miners, a
+data exchange and a data reconstruction script. The miners simulate the
+role of the branch owners in building and signing the blockchain. The
+exchange facilitates the communication of the different miners, sharing
+chunks between branches. The reconstruction script serves as a
+demonstration of the algorithm that patients would follow if they were
+to lose access to the branch containing their data.
+
+\hypertarget{header-n101}{%
+\paragraph{Miners}\label{header-n101}}
+
+The miners run on different processes on the computer with no shared
+memory and hence all communications go through the exchange. The miners
+generate data that symbolises the medical records being added to the
+network by patients, which are then used to generate a block. A copy of
+the block is encoded into chunks using the Reed Solomon Erasure Coding
+protocol, these chunks are then published to the exchange.
+
+\hypertarget{header-n103}{%
+\paragraph{Exchange}\label{header-n103}}
+
+The exchange serves the purpose of receiving and re-distributing block
+chunks to miners and exists in the form of a primitive web server,
+handling only HTTP GET and POST requests. This design was chosen as it
+will facilitate the use of the internet to communicate between miners on
+different networks, whilst demonstrating through a distinct lack of
+server-side processing of data, the ability of the miners to communicate
+directly with one another in a truly peer-to-peer manner. The only
+primitive processing executed by the server is that of adhering to a
+chunk blacklist specified by miners when requesting chunks. This is
+important so that miners can blacklist themselves and not get their own
+chunks back. It also demonstrates the ability of miners to chose which
+branches they want to accept chunks from.
+
+\hypertarget{header-n105}{%
+\paragraph{Branch Reconstruction}\label{header-n105}}
+
+Currently a branch reconstruction program demonstrates the process that
+would be followed by a patient or group of patients if they were to lose
+access to any given branch. The program queries data in the blockchain
+files in the relevant directories for foreign chunks from a given
+branch. The program then reconstructs the primary data of each block
+using the chunks by following the Reed Solomon Erasure Coding
+reconstruction algorithm.
+
+\hypertarget{header-n107}{%
+\paragraph{Data}\label{header-n107}}
+
+Currently the data is an arbitrary ASCII string. With further
+development, the data will be stored as standardised data records that
+will conform to a given schema. A schema used in a production
+implementation of the system would require extensive collaboration with
+medical professionals in order to produce a schema that accommodates
+enough variance of data whilst not impeding on medical research through
+poorly formatted datasets.
+
+\hypertarget{header-n109}{%
+\subsubsection{Results}\label{header-n109}}
+
+Below is the log of a minimalistic simulation with 3 miners generating
+two blocks each (not including the uniform genesis block).
+
+\begin{verbatim}
+Miner 1: Initialised and genesis block added to chain
+Miner 2: Initialised and genesis block added to chain
+Miner 0: Initialised and genesis block added to chain
+Miner 1: Published chunks for block 1
+Miner 2: Published chunks for block 1
+Miner 0: Published chunks for block 1
+Miner 1: Downloaded foreign chunks for block 1
+Miner 1: Added block 1 to chain
+Miner 2: Downloaded foreign chunks for block 1
+Miner 2: Added block 1 to chain
+Miner 0: Downloaded foreign chunks for block 1
+Miner 0: Added block 1 to chain
+Miner 1: Published chunks for block 2
+Miner 2: Published chunks for block 2
+Miner 0: Published chunks for block 2
+Miner 1: Downloaded foreign chunks for block 2
+Miner 1: Added block 2 to chain
+Miner 2: Downloaded foreign chunks for block 2
+Miner 2: Added block 2 to chain
+Miner 0: Downloaded foreign chunks for block 2
+Miner 0: Added block 2 to chain
+\end{verbatim}
+
+First each miner generates a genesis block that has some standard data
+as well as the branch owners public key. The miners then begin
+generating some primary data for their first block. This data is a
+randomly generated 64 character string. The block head and primary data
+is then used to generate 5 chunks. These chunks are then published to
+the exchange and downloaded by other miners. The miners add these (now
+foreign) chunks to their blockchains and execute the same process to
+generate another block.
+
+Below is an example of a blockchain with only a genesis block and one
+standard block. The standard block contains one foreign chunk.
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\OtherTok{[}
+    \FunctionTok{\{}
+        \DataTypeTok{"body"}\FunctionTok{:} \StringTok{"This is the first block in the blockchain"}\FunctionTok{,}
+        \DataTypeTok{"head"}\FunctionTok{:} \FunctionTok{\{}
+            \DataTypeTok{"chain_id"}\FunctionTok{:} \StringTok{"558ffe69053c54722bb9933f87b8ec39aa7204b8ab4e3fd819153240.."}\FunctionTok{,}
+            \DataTypeTok{"id"}\FunctionTok{:} \DecValTok{0}
+        \FunctionTok{\}}
+    \FunctionTok{\}}\OtherTok{,}
+    \FunctionTok{\{}
+        \DataTypeTok{"body"}\FunctionTok{:} \StringTok{"5bipl5pqB4idTKaiBHUs65AQrTBaMlFevxiB9dD6MZPSTvhj2frTp93ahP7AJ"}\FunctionTok{,}
+        \DataTypeTok{"foreign_chunks"}\FunctionTok{:} \OtherTok{[}
+            \FunctionTok{\{}
+                \DataTypeTok{"data"}\FunctionTok{:} \StringTok{"36fa355b3678a1146ad16f7e8649e94fb4fc21fe77e8310c060f61ca.."}\FunctionTok{,}
+                \DataTypeTok{"hash"}\FunctionTok{:} \StringTok{"a8f852c979447f3f7b3fe4c2b6d8c8f0e1a13bbc135efb2cbbb5052d.."}\FunctionTok{,}
+                \DataTypeTok{"head"}\FunctionTok{:} \FunctionTok{\{}
+                    \DataTypeTok{"block_id"}\FunctionTok{:} \DecValTok{2}\FunctionTok{,}
+                    \DataTypeTok{"chain_id"}\FunctionTok{:} \StringTok{"ff91c1311116c1469e789a33cf1466e61f682c4ff7f693bf.."}\FunctionTok{,}
+                    \DataTypeTok{"chunk_id"}\FunctionTok{:} \DecValTok{3}
+                \FunctionTok{\},}
+                \DataTypeTok{"signature"}\FunctionTok{:} \DecValTok{1168767186736185247057188947692667929143094761666159608}\ErrorTok{..}
+            \FunctionTok{\}}
+        \OtherTok{]}\FunctionTok{,}
+        \DataTypeTok{"head"}\FunctionTok{:} \FunctionTok{\{}
+            \DataTypeTok{"chain_id"}\FunctionTok{:} \StringTok{"558ffe69053c54722bb9933f87b8ec39aa7204b8ab4e3fd819153240b.."}\FunctionTok{,}
+            \DataTypeTok{"id"}\FunctionTok{:} \DecValTok{1}\FunctionTok{,}
+            \DataTypeTok{"prev_block_hash"}\FunctionTok{:} \StringTok{"44136fa355b3678a1146ad16f7e8649e94fb4fc21fe77e8310c.."}
+        \FunctionTok{\}}
+    \FunctionTok{\}}
+\OtherTok{]}
+\end{Highlighting}
+\end{Shaded}
+
+The only data in each block that is not reconstructed is the foreign
+chunks. This is one of the limitations of the system design.
+
+\hypertarget{header-n116}{%
+\subsubsection{Progress Against Plan}\label{header-n116}}
+
+At the time of writing, the project is currently slightly ahead of
+schedule. The original plan dictated a working implementation be
+finished by the 24\(^{th}\) of February. Whilst this has already been
+achieved, the implementation could be further developed past the
+minimally satisfactory point. The project currently demonstrates a
+strong proof of concept but falls short of demonstrating proof of
+implementation. Development of the implementation is expected to
+continue in parallel with writing the dissertation.
+
+\hypertarget{header-n118}{%
+\subsubsection{Further Developments}\label{header-n118}}
+
+The project still has a number of required features and desirable
+features which still need to be implemented in order to successfully
+demonstrate that the system is implementable.
+
+\hypertarget{header-n120}{%
+\paragraph{Distributed Simulation}\label{header-n120}}
+
+Developing the system to work entirely over existing protocols on the
+internet is essential in order to achieve the objective of the project.
+The exchange must be able to be reachable over the internet from any
+standard network. If the timeline permits, I would like to move the
+network to be purely peer to peer, such that the exchange is used only
+for peer discovery between nodes.
+
+With further development, each miner will also be capable of
+continuously listening for queries and returning data, both individual
+records and requested chunks existing on its branch. The reconstruction
+script will then be able to query the miners for chunks on their
+blockchain via the exchange, as this will more accurately represent how
+this would be carried out on a productionised system.
+
+\hypertarget{header-n125}{%
+\paragraph{File Storage}\label{header-n125}}
+
+A productionised version of the solution would be required to store many
+different types of files. Therefore, it would be very beneficial to
+develop the ability of the system to store many different formats of
+data on a blockchain. The blockchains currently exists in the form of
+JSON files which only facilitate the storage of ASCII data. Implementing
+this functionality would require either a significant redesign, or
+implementing a much less efficient system for converting files into
+ASCII data.
+
+\hypertarget{header-n127}{%
+\paragraph{Security Features}\label{header-n127}}
+
+A vital role of each miner is checking the validity of each block and
+chunk of data and this has yet to be implemented. In its current state,
+the miners make no attempt to check the digital signatures, or size of
+foreign chunks that they accept into their blocks. This leaves the
+network vulnerable to denial of service attacks and risks reducing the
+credibility of the network.
+
+The initial design behind the algorithm dictated that with each foreign
+chunk accepted onto a branch, the miner would validate the block and
+hence the entire blockchain that the chunk originally pertains to.
+Further investigation is required into the feasibility of this design.
+Perhaps the miner need only validate the block in question and some
+number of previous blocks.
+
+\hypertarget{header-n130}{%
+\subsection{Testing}\label{header-n130}}
+
+\hypertarget{header-n131}{%
+\paragraph{Miner}\label{header-n131}}
+
+The miner can be tested to check that the blockchain it produces is
+valid to the extent that all hashes and signatures are correct. The
+chunks posted to the exchange can be tested to ensure that the chunks
+can be successfully reconstructed into a valid block using all different
+permutations of the chunks, and that the reconstructed data is identical
+to the primary data of the block it was generated from. Tests checking
+that the miner only accepts records that have been correctly signed
+should also be implemented.
+
+\hypertarget{header-n133}{%
+\paragraph{Exchange}\label{header-n133}}
+
+The exchange is possibly the simplest module of the system to test as
+each test-case can simply submit a sequence of chunks and with various
+signatures and branch ID's, and then request chunks back. The returned
+chunks can then be checked for validity by checking that the branch ids
+are not blacklisted in the request, and by checking that the chunks are
+identical to those that were submitted.
+
+\hypertarget{header-n135}{%
+\paragraph{Network}\label{header-n135}}
+
+Testing of the network as a whole can be achieved by introducing
+malicious nodes attempting to cause the either the loss of data, flood
+the network with malicious data, or introduce data without hosting their
+required amount. The network can also be tested by introducing a number
+of nodes that encounter a fault and become unusable. This should give a
+good indication of the fault tolerance of the network.
+
+\hypertarget{header-n137}{%
+\paragraph{Metamorphic Holistic Testing}\label{header-n137}}
+
+Testing of the individual modular components of this project will not
+suffice to ascertain security of the network. While it is necessary to
+implement a test suite for the miner module, exchange, and
+reconstruction software individually, we must also scrutinise the
+network as a whole in order to establish how it fares against malicious
+intent and inevitable faults.
+
+Metamorphic testing is a way of testing software in which tests do not
+compare a set of inputs against an expected output, but rather analyse
+relationships between multiple input-output pairs {[}15{]}. The
+following metamorphic relationships are expected to hold true and can
+therefore be tested:
+
+\begin{itemize}
+\item
+  Average bytes stored per branch should remain constant when varying
+  the number of branches/miners on the network.
+\item
+  The fault tolerance should be mathematically related in some
+  (currently unknown) way to the recovery ratio of the erasure coding
+  code rate.
+\item
+  The resulting blocks created by any combination of chunks originating
+  from the same block should all be equal.
+\item
+  Foreign chunks accepted onto on branch should not be rejected from
+  another.
+\end{itemize}
+
+\begin{quote}
+TODO: Check with Dave Towie
+\end{quote}
+
+\hypertarget{header-n151}{%
+\subsection{Conclusion}\label{header-n151}}
+
+To date, I have implemented a working simulation of miners adding data
+to a blockchain and sharing chunks of each of their blocks on their
+chain with one-another. I have written software capable of
+reconstructing the primary data on any one branch from secondary data on
+other branches. The system currently has very few of the necessary
+security features implemented. In it's current state, malicious actors
+could easily take down the network by flooding it with null data as they
+would not have to prove storage of an equal amount of secondary data.
+
+Traditional blockchain technology can cope with nodes leaving and
+rejoining the network exceptionally well. This is because the complete
+blockchain is stored on all nodes {[}2{]}. Therefore, nodes can simply
+query another node upon rejoining. However, the system laid out above
+was designed so that this is not the case. Therefore it currently has
+very little tolerance for nodes wishing to leave, as data they were
+previously hosting must be reconstructed and new primary storage must be
+set up. The system currently has no functionality for patients (or
+simulations thereof) to add data to a branch of the network. The
+necessary privacy and security features will also be required. The
+simulation is also not currently able to communicate over the internet
+or store non-ASCII data.
+
+Research and system design of how a proof of storage protocol could be
+implemented and added to the system has yet to be carried out. This is
+fairly crucial to the network as it prevents the ability of
+\emph{free-riders}, that is, parties to the network hoping utilise the
+storage offered by other nodes, whilst not storing an adequate amount of
+others data themselves.
+
+\hypertarget{header-n155}{%
+\subsection{Works Cited}\label{header-n155}}
+
+\begin{enumerate}
+\def\labelenumi{\arabic{enumi}.}
+\item
+  Daniel Kahneman. Thinking Fast And Slow. Farrar, Straus and Giroux,
+  2011. 
+\item
+  Satoshi Nakamoto. Bitcoin: A peer-to-peer electronic cash system.
+  2008. 
+\item
+  Marc Pilkington. Can blockchain improve healthcare management? 
+\item
+  The Economist. Rise of the machines. 2015. 
+\item
+  Mandl KD Weitzman ER, Kaci L. Sharing medical data for health
+  research: The early personal health record experience. 2010. 
+\item
+  Blockchain. "Size of The Bitcoin Blockchain from 2010 to 2019, by
+  Quarter (in Megabytes)." \emph{Statista}, Statista Inc., 30 Sep 2019,
+  https://www.statista.com/statistics/647523/worldwide-bitcoin-blockchain-size/
+\item
+  https://www.bitcoinmarketjournal.com/how-many-people-use-bitcoin/
+\item
+  Azaria, Asaph, et al. "Medrec: Using blockchain for medical data
+  access and permission management." \emph{2016 2nd International
+  Conference on Open and Big Data (OBD)}. IEEE, 2016.
+\item
+  K. D. Mandl \emph{et al.}, ``Public standards and patients' control:
+  how to keep electronic medical records accessible but private,''
+  \emph{BMJ}, vol. 322, no. 7281, pp. 283--287, 2001.
+\item
+  Liang, Xueping, et al. "Integrating blockchain for data sharing and
+  collaboration in mobile healthcare applications." \emph{2017 IEEE 28th
+  Annual International Symposium on Personal, Indoor, and Mobile Radio
+  Communications (PIMRC)}. IEEE, 2017.
+\item
+  Xia, Q. I., et al. "MeDShare: Trust-less medical data sharing among
+  cloud service providers via blockchain." \emph{IEEE Access} 5 (2017):
+  14757-14767.
+\item
+  Fan, Kai, et al. "Medblock: Efficient and secure medical data sharing
+  via blockchain." \emph{Journal of medical systems} 42.8 (2018)
+\item
+  Zyskind, Guy, and Oz Nathan. "Decentralizing privacy: Using blockchain
+  to protect personal data." \emph{2015 IEEE Security and Privacy
+  Workshops}. IEEE, 2015.
+\item
+  Weatherspoon, Hakim, and John D. Kubiatowicz. "Erasure coding vs.
+  replication: A quantitative comparison." \emph{International Workshop
+  on Peer-to-Peer Systems}. Springer, Berlin, Heidelberg, 2002.
+\item
+  Segura, Sergio, et al. "Metamorphic testing: Testing the untestable."
+  \emph{IEEE Software} (2018).
+\item
+  Cong, Lin William, and Zhiguo He. "Blockchain disruption and smart
+  contracts." \emph{The Review of Financial Studies} 32.5 (2019).
+\item
+  Perard, Doriane, et al. "Erasure code-based low storage blockchain
+  node." \emph{2018 IEEE International Conference on Internet of Things
+  (iThings) and IEEE Green Computing and Communications (GreenCom) and
+  IEEE Cyber, Physical and Social Computing (CPSCom) and IEEE Smart Data
+  (SmartData)}. IEEE, 2018.
+\item
+  Katina Kralevska, Applied Erasure Coding in Networks and Distributed
+  Storage
+\item
+  Nathan Heller. "Estonia, the Digital Republic"
+\item
+  Mahdi Zamani. "RapidChain: Scaling Blockchain via Full Sharding"
+\item
+  Wood, G.: Ethereum: A secure decentralised generalised transaction
+  ledger. Tech. Rep. EIP-150, Ethereum Project -- Yellow Paper (April
+  2014)
+\item
+  Underwood, S.: Blockchain beyond Bitcoin. Communications of the ACM
+  59(2016).
+\item
+  https://www.bbc.com/news/technology-48853230
+\item
+  https://www.cbeci.org/
+\item
+  https://www.bbc.com/news/technology-44682369
+\item
+  Luc Wood, interview
+\end{enumerate}
+
+\end{document}

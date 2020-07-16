@@ -1,4 +1,4 @@
-## Machine Learning Course Work
+## Machine Learning Experiment
 
 I used a data set of 4000 images for the training of the SVMs, and 60 000 images for the training of the CNNs. These appeared to be large enough to uncover the expected trends in the data whilst allowing for enough tests to be run in order to produce detailed graphs and allow for the comprehensive analysis of parameters.
 
@@ -7,38 +7,42 @@ I used a data set of 4000 images for the training of the SVMs, and 60 000 images
 #### Principle Component Analysis
 
 <center>
-    <img src="task2/figs/acc_v_pca.png" alt="acc_v_pca" style="width:40%;" />
-    <img src="task2/figs/f1_pc_v_dimensionality.png" alt="f1_pc_v_dimensionality" style="width:40%;" />
+    <img src="chapter_1/figs/acc_v_pca.png" alt="acc_v_pca" style="width:48%;" />
+    <img src="chapter_1/figs/f1_pc_v_dimensionality.png" alt="f1_pc_v_dimensionality" style="width:48%;" />
 </center>
+
 
 The results indicate that there is a reduction in accuracy with a reduction in dimensionality after around 60% of the original dimensionality. We can therefore assume that approximately 40% of the data in the average image is redundant. The accuracy score resulting from test data is lower than that resulting from cross validation. This is to be expected as the model had not been trained on any of the test data, but had been trained on the validation data during previous iterations of CV. We can assume that the rise in accuracy resulting from the 10% decrease in dimensionality at 40% is due to noisy data, and therefore still fits the expected trend. The F1 scores are considerably more noisy than the accuracy because each category has been trained on one tenth of the total data. We can therefore expect that trends uncovered when looking at the overall accuracy would be considerably more distinguished than those produced from examining each class individually. For best results, we would apply a reduction in dimensionality of approximately 60% of the original dimensionality as we would increase the training time considerably whilst losing little relevant information.
 
 #### Polynomial Kernel SVM:
 
-<img src="task2/figs/poly_c_v_acc.png" alt="poly_c_v_acc" style="width:40%;" />
+<img src="chapter_1/figs/poly_c_v_acc.png" alt="poly_c_v_acc" style="width:48%;" />
 
 The polynomial kernel was most accurate on the data with a C value of around 0 for kernels of degree two, three, and four. When using a C value smaller than 10, the decision boundary is not flexible enough to allow for the correct classification of as many images and the data is under-fit. The accuracy decreases after a C value of zero as the margin is not soft enough and the decision boundary is overfitted to the training data. The higher degree kernel overfits more than a lower degree because it is capable of drawing a more detailed decision boundary and adjusts to the details of the boundary in the training data to a greater extent.
 
 <center>
-    <img src="task2/figs/poly_degree_v_acc.png" alt="f1_pc_v_dimensionality" style="width:40%;" />
-    <img src="task2/figs/poly_c_v_f1.png" alt="acc_v_pca" style="width:40%;" />
+    <img src="chapter_1/figs/poly_degree_v_acc.png" alt="f1_pc_v_dimensionality" style="width:48%;" />
+    <img src="chapter_1/figs/poly_c_v_f1.png" alt="acc_v_pca" style="width:48%;" />
 </center>
+
 
 The graph above shows accuracy results of a changing polynomial kernel degree. The curve peaks at a polynomial value of 2, after which the accuracy begins to drop. The SVM is likely not overfitting the dataset as the test accuracy and CV accuracy both decrease together, rather the kernel is making appropriate generalisations of the data from degree 1 to degree 2. The underlying equation for a polynomial kernel is $K(x,y) = (x^T y + c)^d$ therefore, with a degree of 0. The kernel function maps all data points to a value of 1 and is therefore no more accurate than the proportion of the dataset that this class represents (10%).
 
 #### RBF Kernel SVM
 
 <center>
-    <img src="task2/figs/rbf_c_v_acc.png" alt="" style="width:40%;" />
-    <img src="task2/figs/rbf_c_v_f1.png" alt="" style="width:40%;" />
+    <img src="chapter_1/figs/rbf_c_v_acc.png" alt="" style="width:48%;" />
+    <img src="chapter_1/figs/rbf_c_v_f1.png" alt="" style="width:48%;" />
 </center>
+
 
 The graph above shows that for a value of C < 0.01, the F1 scores for each class are unresponsively low. This is to be expected as the RBF kernels function will have a very soft margin and is resultantly misclassifying too many points in the training data. As the C is increased, the kernel will have a greater bias toward a decision boundary that correctly classifies more of the training data. The accuracy of the RBF Kernel begins drastically increasing in accuracy around a C value of 0.1, at this point, the boundaries drawn by the kernel function begin separating the different classes. This continues until a C value of approximately 1.0 is reached, where the accuracy reaches its maximum. It is likely that this is the maximum level of accuracy that can be achieved with this set of parameters for the RBF kernel, and that if we were to run tests with a larger value of C, the test accuracy would eventually begin to drop as the SVM began to overfit the data. The average F1 and accuracy scores do not vary by a considerable amount. This in part due to the even distribution of classes within the dataset.
 
 <center>
-    <img src="task2/figs/rbf_gamma_v_acc.png" alt="" style="width:40%;" />
-    <img src="task2/figs/rbf_gamma_v_f1.png" alt="" style="width:40%;" />
+    <img src="chapter_1/figs/rbf_gamma_v_acc.png" alt="" style="width:48%;" />
+    <img src="chapter_1/figs/rbf_gamma_v_f1.png" alt="" style="width:48%;" />
 </center>
+
 
 As gamma is the multiplier that changes the size of the sphere of influence that each data point has on the decision plain, we would expect to see the accuracy peak at some value of gamma at the point in which the model is most balanced between being influenced by too many and too few data points. We can see that at a gamma value of 10$^{-2}$, the RBF kernel is influenced by data at the most optimal distance and the accuracy is at its peak for this set of parameters.
 
@@ -110,13 +114,13 @@ Next I decided to trial varying the numbers of output channels of each convoluti
 
 #### Epochs
 
-<img src="task3/figs/epoch_acc.png" alt="epoch_acc " style="width:40%;" />
+<img src="chapter_2/figs/epoch_acc.png" alt="epoch_acc " style="width:48%;" />
 
 The graph above shows the accuracy of the model on test data at each epoch. From epochs one to five, the model is fitting the data to an appropriate mount. After five epochs, the model begins to over fit the data. The test data remained the same throughout the training of this model and therefore was never trained on. Typically test data is not used to adjust parameters of the model and is instead used to evaluate the model at the end of development. However, I am not planning to productionised my model and am instead experimenting with different model architectures on the dataset. I am therefore allocating no data for a final test set to evaluate the model at the end of development in favour of having more data to train the model on during development. In this way, I am choosing to have a higher accuracy of the model at the cost of a lower accuracy of the evaluation of my model.
 
 #### Learning Rate
 
-<img src="task3/figs/lr_acc.png" alt="epoch_acc " style="width:40%;" />
+<img src="chapter_2/figs/lr_acc.png" alt="epoch_acc " style="width:48%;" />
 
 As the learning rate is the amount by which we adjust weights with respect to the loss gradient, we would expect there to be some peak value. Too low and the weights will not converge fast enough for our finite dataset, too large and it may overshoot the optimal by a considerable amount. The optimal learning rate for this model is approximately 10$^{-7}$.
 
